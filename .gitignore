@@ -1,0 +1,58 @@
+# Java build artifacts
+*.class
+*.log
+hs_err_pid*
+replay_pid*
+
+# Maven
+# All build outputs
+/target/
+# Keep Maven Wrapper JAR tracked if present
+!.mvn/wrapper/maven-wrapper.jar
+
+# Gradle (in case you add it later)
+/.gradle/
+/build/
+
+# IDEs and Editors
+# IntelliJ IDEA
+/.idea/
+*.iml
+*.ipr
+*.iws
+/out/
+
+# Eclipse
+/.project
+/.classpath
+/.settings/
+/bin/
+
+# VS Code
+/.vscode/
+.history/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Coverage and reports
+/jacoco.exec
+/coverage/
+
+# OS-specific junk
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# Local environment files
+.env
+.env.*
