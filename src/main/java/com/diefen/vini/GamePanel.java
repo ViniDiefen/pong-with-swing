@@ -17,19 +17,12 @@ import com.diefen.vini.physics.CollisionDetector;
 import com.diefen.vini.renderers.GameOverRenderer;
 
 /**
- * Game Panel com implementação CORRETA de Game Loop
- * 
- * Diferenças da versão original:
- * 1. Usa Thread própria ao invés de Timer do Swing
- * 2. Separa Input, Update e Render
- * 3. Update roda com Fixed Timestep (60 FPS fixo)
- * 4. Render roda o máximo possível (Variable Timestep)
- * 5. Input processado sempre (máxima responsividade)
+ * Game Panel com implementação de Game Loop
  */
 public class GamePanel extends JPanel implements Runnable {
 
-    private static final int TARGET_UPS = 60; // Updates per second
-    private static final double NS_PER_UPDATE = 1_000_000_000.0 / TARGET_UPS;
+    private static final int TARGET_FPS = 60;
+    private static final double NS_PER_UPDATE = 1_000_000_000.0 / TARGET_FPS;
     private static final int WINNING_SCORE = 5;
 
     // Game entities
@@ -46,10 +39,6 @@ public class GamePanel extends JPanel implements Runnable {
     // Game loop control
     private Thread gameThread;
     private volatile GameState currentState = GameState.STOPPED;
-
-    // Debug info (opcional)
-    private int fps = 0;
-    private int ups = 0;
 
     public GamePanel() {
         setBackground(Color.BLACK);
@@ -103,12 +92,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * GAME LOOP PRINCIPAL
-     * 
-     * Esta é a implementação correta separando:
-     * - processInput(): fora do delta (sempre executa)
-     * - update(): dentro do delta (fixed timestep)
-     * - render(): fora do delta (sempre executa)
+     * Game loop
      */
     @Override
     public void run() {
@@ -118,48 +102,35 @@ public class GamePanel extends JPanel implements Runnable {
         // Para calcular FPS e UPS (opcional)
         long timer = System.currentTimeMillis();
         int frames = 0;
-        int updates = 0;
 
         while (currentState.isGameLoopActive()) {
             long now = System.nanoTime();
             delta += (now - lastTime) / NS_PER_UPDATE;
             lastTime = now;
 
-            // ===== PROCESSA INPUT =====
-            // Sempre executa, não depende de delta
-            // Garante que input seja processado imediatamente
+            // Input
             processInput();
 
-            // ===== UPDATE =====
-            // Executa em passos fixos (Fixed Timestep)
-            // Garante física consistente independente do FPS
+            // Update
             while (delta >= 1) {
                 if (currentState == GameState.PLAYING && leftPaddle != null) {
                     update();
-                    updates++;
                 }
                 delta--;
             }
 
-            // ===== RENDER =====
-            // Sempre executa, não depende de delta
-            // Permite renderização mais suave que o update
+            // Render
             repaint();
             frames++;
 
-            // Atualiza contadores de FPS/UPS a cada segundo (debug)
+            // FPS tracking (optional)
             if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
-                fps = frames;
-                ups = updates;
-                // System.out.println("FPS: " + fps + " | UPS: " + ups); // Descomentar para
-                // debug
+                System.out.println("FPS: " + frames);
                 frames = 0;
-                updates = 0;
             }
 
-            // Pequena pausa para não sobrecarregar a CPU
-            // (opcional, mas recomendado)
+            // Small sleep to prevent CPU overload
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -184,10 +155,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * UPDATE GAME LOGIC
-     * 
-     * Executado com FIXED TIMESTEP (sempre 60 vezes por segundo)
-     * Garante física determinística
+     * Update game entities and check game logic
      */
     private void update() {
         // Update entities with screen boundaries
@@ -220,10 +188,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * RENDERIZAÇÃO
-     * 
-     * Executado o máximo possível (pode ser >60 FPS)
-     * Desenha o estado atual dos objetos
+     * Render the game entities
      */
     @Override
     protected void paintComponent(Graphics g) {
@@ -248,16 +213,12 @@ public class GamePanel extends JPanel implements Runnable {
             GameOverRenderer.drawGameOver(g, scoreManager.getWinner(), getWidth(), getHeight());
         }
 
-        // Draw debug info (opcional)
-        // g.setColor(Color.WHITE);
-        // g.drawString("FPS: " + fps + " | UPS: " + ups, 10, 20);
-
         // Sync for smooth rendering
         Toolkit.getDefaultToolkit().sync();
     }
 
     /**
-     * Inicia o game loop em uma thread separada
+     * Starts the game loop in a new thread
      */
     public void start() {
         if (currentState.isGameLoopActive())
@@ -269,32 +230,25 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Pausa o jogo (para o update, mas continua renderizando)
+     * Pause the game loop (does not stop the rendering)
      */
     public void pause() {
         currentState = GameState.PAUSED;
     }
 
     /**
-     * Para completamente o game loop
+     * Stop completely the game loop
      */
     public void stop() {
         currentState = GameState.STOPPED;
         try {
             if (gameThread != null) {
-                gameThread.join(1000); // Espera até 1 segundo
+                // Wait 1 second for the thread to finish
+                gameThread.join(1000);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
-    // Getters para debug (opcional)
-    public int getFPS() {
-        return fps;
-    }
-
-    public int getUPS() {
-        return ups;
-    }
 }
