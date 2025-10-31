@@ -1,9 +1,9 @@
-package com.diefen.vini.renderers;
+package br.com.vinidiefen.pong.renderers;
 
 import java.awt.Color;
 import java.awt.Graphics;
 
-import com.diefen.vini.entities.Ball;
+import br.com.vinidiefen.pong.entities.Ball;
 
 /**
  * Handles rendering of ball entity

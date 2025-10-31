@@ -97,7 +97,7 @@ The project follows object-oriented design principles with the following structu
 4. Run the game:
 
    ```bash
-   mvn exec:java -Dexec.mainClass="com.diefen.vini.Main"
+   mvn exec:java -Dexec.mainClass="br.com.vinidiefen.pong.Main"
    ```
 
 ### Building JAR
@@ -106,7 +106,7 @@ To create an executable JAR file:
 
 ```bash
 mvn clean package
-java -jar target/game1-1.0-SNAPSHOT.jar
+java -jar target/pong-1.0-SNAPSHOT.jar
 ```
 
 ## 🎯 Game Rules
@@ -133,7 +133,7 @@ game1/
 └── src/
     ├── main/
     │   ├── java/
-    │   │   └── com/diefen/vini/
+    │   │   └── br/com/vinidiefen/pong/
     │   │       ├── Main.java
     │   │       ├── GameFrame.java
     │   │       ├── GamePanel.java

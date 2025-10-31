@@ -1,11 +1,11 @@
-package com.diefen.vini.entities;
+package br.com.vinidiefen.pong.entities;
 
 import java.awt.Component;
 import java.awt.Graphics;
 
-import com.diefen.vini.physics.CollisionEvent;
-import com.diefen.vini.physics.CollisionObserver;
-import com.diefen.vini.renderers.BallRenderer;
+import br.com.vinidiefen.pong.physics.CollisionEvent;
+import br.com.vinidiefen.pong.physics.CollisionObserver;
+import br.com.vinidiefen.pong.renderers.BallRenderer;
 
 /**
  * Ball entity that bounces around the screen

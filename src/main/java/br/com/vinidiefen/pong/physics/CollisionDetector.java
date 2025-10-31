@@ -1,11 +1,11 @@
-package com.diefen.vini.physics;
+package br.com.vinidiefen.pong.physics;
 
 import java.awt.Rectangle;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.diefen.vini.entities.GameObject;
+import br.com.vinidiefen.pong.entities.GameObject;
 
 /**
  * Handles collision detection between game entities

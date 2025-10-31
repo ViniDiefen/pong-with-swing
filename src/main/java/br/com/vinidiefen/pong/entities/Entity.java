@@ -1,4 +1,4 @@
-package com.diefen.vini.entities;
+package br.com.vinidiefen.pong.entities;
 
 /**
  * Base interface for all game entities

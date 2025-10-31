@@ -1,8 +1,8 @@
-package com.diefen.vini;
+package br.com.vinidiefen.pong;
 
 import java.awt.Graphics;
 
-import com.diefen.vini.renderers.ScoreRenderer;
+import br.com.vinidiefen.pong.renderers.ScoreRenderer;
 
 /**
  * Manages player scores

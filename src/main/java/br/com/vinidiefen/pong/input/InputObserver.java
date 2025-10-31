@@ -1,4 +1,4 @@
-package com.diefen.vini.input;
+package br.com.vinidiefen.pong.input;
 
 import java.awt.event.KeyEvent;
 

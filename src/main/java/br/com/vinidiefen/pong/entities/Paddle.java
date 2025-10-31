@@ -1,11 +1,11 @@
-package com.diefen.vini.entities;
+package br.com.vinidiefen.pong.entities;
 
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
-import com.diefen.vini.input.InputObserver;
-import com.diefen.vini.renderers.PaddleRenderer;
+import br.com.vinidiefen.pong.input.InputObserver;
+import br.com.vinidiefen.pong.renderers.PaddleRenderer;
 
 /**
  * Paddle entity controlled by player (Observer in Observer pattern)

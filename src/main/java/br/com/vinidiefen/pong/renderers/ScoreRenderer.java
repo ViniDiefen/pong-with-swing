@@ -1,4 +1,4 @@
-package com.diefen.vini.renderers;
+package br.com.vinidiefen.pong.renderers;
 
 import java.awt.Color;
 import java.awt.Font;

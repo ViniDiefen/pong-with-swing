@@ -1,4 +1,4 @@
-package com.diefen.vini;
+package br.com.vinidiefen.pong;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -9,12 +9,12 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JPanel;
 
-import com.diefen.vini.entities.Ball;
-import com.diefen.vini.entities.FieldLine;
-import com.diefen.vini.entities.Paddle;
-import com.diefen.vini.input.KeyboardHandler;
-import com.diefen.vini.physics.CollisionDetector;
-import com.diefen.vini.renderers.GameOverRenderer;
+import br.com.vinidiefen.pong.entities.Ball;
+import br.com.vinidiefen.pong.entities.FieldLine;
+import br.com.vinidiefen.pong.entities.Paddle;
+import br.com.vinidiefen.pong.input.KeyboardHandler;
+import br.com.vinidiefen.pong.physics.CollisionDetector;
+import br.com.vinidiefen.pong.renderers.GameOverRenderer;
 
 /**
  * Game Panel com implementação de Game Loop

@@ -1,4 +1,4 @@
-package com.diefen.vini.entities;
+package br.com.vinidiefen.pong.entities;
 
 import java.awt.Component;
 import java.awt.Graphics;

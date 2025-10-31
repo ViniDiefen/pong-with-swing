@@ -1,4 +1,4 @@
-package com.diefen.vini;
+package br.com.vinidiefen.pong;
 
 /**
  * Represents the current state of the game

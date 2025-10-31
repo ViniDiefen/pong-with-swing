@@ -1,4 +1,4 @@
-package com.diefen.vini.physics;
+package br.com.vinidiefen.pong.physics;
 
 import java.util.EventObject;
 

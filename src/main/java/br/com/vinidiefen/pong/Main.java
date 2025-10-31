@@ -1,4 +1,4 @@
-package com.diefen.vini;
+package br.com.vinidiefen.pong;
 
 import java.awt.Font;
 import java.io.InputStream;

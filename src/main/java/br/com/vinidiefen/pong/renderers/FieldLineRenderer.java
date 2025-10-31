@@ -1,11 +1,11 @@
-package com.diefen.vini.renderers;
+package br.com.vinidiefen.pong.renderers;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import com.diefen.vini.entities.FieldLine;
+import br.com.vinidiefen.pong.entities.FieldLine;
 
 public class FieldLineRenderer {
     
