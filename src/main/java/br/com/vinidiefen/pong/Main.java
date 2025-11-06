@@ -2,6 +2,7 @@ package br.com.vinidiefen.pong;
 
 import java.awt.Font;
 import java.io.InputStream;
+import java.util.Optional;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -32,26 +33,21 @@ public class Main {
      * Configure custom font for UI
      */
     private static void configureDefaultFont() {
-        Font customFont = loadFont();
-        if (customFont != null) {
-            customFont = customFont.deriveFont(24f);
-            UIManager.put("Label.font", customFont);
-        }
+        Optional<Font> customFontOptional = loadFont();
+        customFontOptional.ifPresent(font -> UIManager.put("Label.font", font.deriveFont(24f)));
     }
 
     /**
      * Load custom font from resources
      */
-    public static Font loadFont() {
+    public static Optional<Font> loadFont() {
         try (InputStream is = Main.class.getResourceAsStream("/fonts/PressStart2P.ttf")) {
-            if (is != null) {
-                return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(24f);
-            }
+            return Optional.ofNullable(Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(24f));
         } catch (Exception e) {
             System.err.println("Failed to load custom font: " + e.getMessage());
         }
         // Fallback to default font
-        return new Font("Arial", Font.PLAIN, 24);
+        return Optional.of(new Font("Arial", Font.PLAIN, 24));
     }
 
 }
