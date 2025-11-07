@@ -3,7 +3,7 @@ package br.com.vinidiefen.pong.renderers;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import br.com.vinidiefen.pong.entities.Paddle;
+import br.com.vinidiefen.pong.components.Paddle;
 
 /**
  * Handles rendering of paddle entities

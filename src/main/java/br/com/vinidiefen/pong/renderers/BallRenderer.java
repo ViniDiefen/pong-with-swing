@@ -3,7 +3,7 @@ package br.com.vinidiefen.pong.renderers;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import br.com.vinidiefen.pong.entities.Ball;
+import br.com.vinidiefen.pong.components.Ball;
 
 /**
  * Handles rendering of ball entity

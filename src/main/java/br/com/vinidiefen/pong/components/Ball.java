@@ -1,8 +1,8 @@
-package br.com.vinidiefen.pong.entities;
+package br.com.vinidiefen.pong.components;
 
-import java.awt.Component;
 import java.awt.Graphics;
 
+import br.com.vinidiefen.pong.models.BallModel;
 import br.com.vinidiefen.pong.physics.CollisionEvent;
 import br.com.vinidiefen.pong.physics.CollisionObserver;
 import br.com.vinidiefen.pong.renderers.BallRenderer;
@@ -20,12 +20,15 @@ public class Ball extends GameObject implements CollisionObserver {
     private int initialX;
     private int initialY;
 
-    public Ball(Component parent, int x, int y) {
-        super(parent, x, y, SIZE, SIZE);
+    public Ball(int x, int y) {
+        super(x, y, SIZE, SIZE);
         this.initialX = x;
         this.initialY = y;
-        this.parent = parent;
         reset();
+    }
+
+    public Ball(BallModel model) {
+        this(model.getX(), model.getY());
     }
 
     @Override

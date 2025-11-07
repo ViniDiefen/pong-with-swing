@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import br.com.vinidiefen.pong.entities.GameObject;
+import br.com.vinidiefen.pong.components.GameObject;
 
 /**
  * Handles collision detection between game entities

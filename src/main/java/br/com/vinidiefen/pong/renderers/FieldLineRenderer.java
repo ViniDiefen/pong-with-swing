@@ -5,9 +5,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import br.com.vinidiefen.pong.entities.FieldLine;
+import br.com.vinidiefen.pong.components.FieldLine;
 
 public class FieldLineRenderer {
+    
+    protected float[] dashPattern = { 10f, 10f };
     
     public static void render(Graphics g, FieldLine line) {
         Graphics2D g2d = (Graphics2D) g;
