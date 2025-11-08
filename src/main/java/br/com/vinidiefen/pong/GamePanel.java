@@ -19,10 +19,8 @@ import br.com.vinidiefen.pong.renderers.GameOverRenderer;
 /**
  * Game Panel com implementação de Game Loop
  */
-public class GamePanel extends JPanel implements Runnable {
-
-    private static final int TARGET_FPS = 60;
-    private static final double NS_PER_UPDATE = 1_000_000_000.0 / TARGET_FPS;
+public class GamePanel extends JPanel {
+    
     private static final int WINNING_SCORE = 5;
 
     // Game entities
@@ -36,8 +34,8 @@ public class GamePanel extends JPanel implements Runnable {
     private KeyboardHandler keyboardHandler;
     private CollisionDetector collisionDetector;
 
-    // Game loop control
-    private Thread gameThread;
+    // Game states/loop control
+    private GameLoop gameLoopThread;
     private volatile GameState currentState = GameState.STOPPED;
 
     public GamePanel() {
@@ -60,6 +58,9 @@ public class GamePanel extends JPanel implements Runnable {
      * Initialize all game objects and systems
      */
     private void initializeGame() {
+        // Instance the game loop thread
+        this.gameLoopThread = new GameLoop(this);
+
         // Create paddles with configurable keys
         int paddleMargin = 50;
         leftPaddle = new Paddle(this, paddleMargin, getHeight() / 2 - Paddle.HEIGHT / 2,
@@ -87,77 +88,15 @@ public class GamePanel extends JPanel implements Runnable {
         // Register collision detection between ball and paddles
         collisionDetector.addCollisionObserver(ball, leftPaddle, rightPaddle);
 
-        // Start game loop (on a separate thread)
-        start();
-    }
-
-    /**
-     * Game loop
-     */
-    @Override
-    public void run() {
-        long lastTime = System.nanoTime();
-        double delta = 0;
-
-        // Para calcular FPS e UPS (opcional)
-        long timer = System.currentTimeMillis();
-        int frames = 0;
-
-        while (currentState.isGameLoopActive()) {
-            long now = System.nanoTime();
-            delta += (now - lastTime) / NS_PER_UPDATE;
-            lastTime = now;
-
-            // Input
-            processInput();
-
-            // Update
-            while (delta >= 1) {
-                if (currentState == GameState.PLAYING && leftPaddle != null) {
-                    update();
-                }
-                delta--;
-            }
-
-            // Render
-            repaint();
-            frames++;
-
-            // FPS tracking (optional)
-            if (System.currentTimeMillis() - timer > 1000) {
-                timer += 1000;
-                System.out.println("FPS: " + frames);
-                frames = 0;
-            }
-
-            // Small sleep to prevent CPU overload
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-    }
-
-    /**
-     * PROCESSA INPUT
-     * 
-     * Executado FORA do loop de delta
-     * Garante responsividade máxima
-     */
-    private void processInput() {
-        // No nosso caso, o KeyboardHandler já processa via eventos
-        // Mas aqui poderíamos fazer polling adicional se necessário
-
-        // Exemplo: verificar se ESC foi pressionado para pausar
-        // ou qualquer processamento de input que não seja feito via eventos
+        // Start game loop thread
+        currentState = GameState.PLAYING;
+        gameLoopThread.start();
     }
 
     /**
      * Update game entities and check game logic
      */
-    private void update() {
+    public void updateComponents() {
         // Update entities with screen boundaries
         leftPaddle.update();
         rightPaddle.update();
@@ -218,37 +157,26 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Starts the game loop in a new thread
-     */
-    public void start() {
-        if (currentState.isGameLoopActive())
-            return;
-
-        currentState = GameState.PLAYING;
-        gameThread = new Thread(this, "GameLoop");
-        gameThread.start();
-    }
-
-    /**
-     * Pause the game loop (does not stop the rendering)
-     */
-    public void pause() {
-        currentState = GameState.PAUSED;
-    }
-
-    /**
      * Stop completely the game loop
      */
     public void stop() {
         currentState = GameState.STOPPED;
         try {
-            if (gameThread != null) {
+            if (gameLoopThread != null) {
                 // Wait 1 second for the thread to finish
-                gameThread.join(1000);
+                gameLoopThread.join(1000);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    public boolean isGameLoopActive() {
+        return currentState.isGameLoopActive();
+    }
+
+    public boolean gameLoopShouldUpdate() {
+        return currentState == GameState.PLAYING;
     }
 
 }
