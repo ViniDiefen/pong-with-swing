@@ -74,7 +74,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Create ball
         ball = new Ball(middleScreenX - middleBall, middleScreenY - middleBall);
         // Create field line
-        fieldLine = new FieldLine(this);
+        fieldLine = new FieldLine();
 
         // Set up parent references
         leftPaddle.setParent(this);

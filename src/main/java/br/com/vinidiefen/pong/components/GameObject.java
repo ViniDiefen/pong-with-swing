@@ -16,6 +16,10 @@ public abstract class GameObject {
     protected int width;
     protected int height;
 
+    public GameObject() {
+        
+    }
+
     public GameObject(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
