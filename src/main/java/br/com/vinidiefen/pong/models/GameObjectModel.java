@@ -3,14 +3,16 @@ package br.com.vinidiefen.pong.models;
 import java.util.UUID;
 
 import br.com.vinidiefen.pong.components.GameObject;
+import br.com.vinidiefen.pong.database.annotations.Column;
 
 public abstract class GameObjectModel {
 
-    private UUID id;
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+    @Column(name = "id", type = "UUID", primaryKey = true)
+    protected UUID id;
+    @Column(name = "x", type = "INTEGER", notNull = true)
+    protected int x;
+    @Column(name = "y", type = "INTEGER", notNull = true)
+    protected int y;
 
     public GameObjectModel() {
     }
@@ -19,8 +21,6 @@ public abstract class GameObjectModel {
         this.id = UUID.randomUUID();
         this.x = gameObject.getX();
         this.y = gameObject.getY();
-        this.width = gameObject.getWidth();
-        this.height = gameObject.getHeight();
     }
 
     public UUID getId() {
@@ -45,22 +45,6 @@ public abstract class GameObjectModel {
 
     public void setY(int y) {
         this.y = y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 
 }

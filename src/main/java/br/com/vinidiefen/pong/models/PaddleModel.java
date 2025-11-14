@@ -1,10 +1,15 @@
 package br.com.vinidiefen.pong.models;
 
 import br.com.vinidiefen.pong.components.Paddle;
+import br.com.vinidiefen.pong.database.annotations.Column;
+import br.com.vinidiefen.pong.database.annotations.Table;
 
+@Table(name = "paddles")
 public class PaddleModel extends GameObjectModel {
 
+    @Column(name = "up_key", type = "INTEGER", notNull = true)
     private int upKey;
+    @Column(name = "down_key", type = "INTEGER", notNull = true)
     private int downKey;
 
     public PaddleModel() {
