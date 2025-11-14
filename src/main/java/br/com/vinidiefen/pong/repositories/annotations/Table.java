@@ -1,4 +1,4 @@
-package br.com.vinidiefen.pong.database.annotations;
+package br.com.vinidiefen.pong.repositories.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

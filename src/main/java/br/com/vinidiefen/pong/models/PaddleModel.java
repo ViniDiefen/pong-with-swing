@@ -1,8 +1,8 @@
 package br.com.vinidiefen.pong.models;
 
 import br.com.vinidiefen.pong.components.Paddle;
-import br.com.vinidiefen.pong.database.annotations.Column;
-import br.com.vinidiefen.pong.database.annotations.Table;
+import br.com.vinidiefen.pong.repositories.annotations.Column;
+import br.com.vinidiefen.pong.repositories.annotations.Table;
 
 @Table(name = "paddles")
 public class PaddleModel extends GameObjectModel {

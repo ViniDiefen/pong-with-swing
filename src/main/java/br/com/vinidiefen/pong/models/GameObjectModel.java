@@ -3,7 +3,7 @@ package br.com.vinidiefen.pong.models;
 import java.util.UUID;
 
 import br.com.vinidiefen.pong.components.GameObject;
-import br.com.vinidiefen.pong.database.annotations.Column;
+import br.com.vinidiefen.pong.repositories.annotations.Column;
 
 public abstract class GameObjectModel {
 
