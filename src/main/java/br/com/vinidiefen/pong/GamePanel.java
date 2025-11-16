@@ -9,9 +9,10 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JPanel;
 
-import br.com.vinidiefen.pong.entities.Ball;
-import br.com.vinidiefen.pong.entities.FieldLine;
-import br.com.vinidiefen.pong.entities.Paddle;
+import br.com.vinidiefen.pong.components.Ball;
+import br.com.vinidiefen.pong.components.FieldLine;
+import br.com.vinidiefen.pong.components.Paddle;
+import br.com.vinidiefen.pong.input.GameShortcuts;
 import br.com.vinidiefen.pong.input.KeyboardHandler;
 import br.com.vinidiefen.pong.physics.CollisionDetector;
 import br.com.vinidiefen.pong.renderers.GameOverRenderer;
@@ -33,6 +34,7 @@ public class GamePanel extends JPanel {
     private ScoreManager scoreManager;
     private KeyboardHandler keyboardHandler;
     private CollisionDetector collisionDetector;
+    private GameShortcuts shortcuts;
 
     // Game states/loop control
     private GameLoop gameLoopThread;
@@ -62,27 +64,37 @@ public class GamePanel extends JPanel {
         this.gameLoopThread = new GameLoop(this);
 
         // Create paddles with configurable keys
+        int middleScreenY = getHeight() / 2;
+        int middleScreenX = getWidth() / 2;
+
         int paddleMargin = 50;
-        leftPaddle = new Paddle(this, paddleMargin, getHeight() / 2 - Paddle.HEIGHT / 2,
-                KeyEvent.VK_W, KeyEvent.VK_S);
-        rightPaddle = new Paddle(this, getWidth() - paddleMargin - Paddle.WIDTH,
-                getHeight() / 2 - Paddle.HEIGHT / 2,
-                KeyEvent.VK_UP, KeyEvent.VK_DOWN);
+        int middlePaddleY = Paddle.HEIGHT / 2;
+
+        int middleBall = Ball.SIZE / 2;
+
+        leftPaddle = new Paddle(paddleMargin, middleScreenY - middlePaddleY, KeyEvent.VK_W, KeyEvent.VK_S);
+        rightPaddle = new Paddle(getWidth() - paddleMargin - Paddle.WIDTH, middleScreenY - middlePaddleY, KeyEvent.VK_UP, KeyEvent.VK_DOWN);
         // Create ball
-        ball = new Ball(this,
-                getWidth() / 2 - Ball.SIZE / 2,
-                getHeight() / 2 - Ball.SIZE / 2);
+        ball = new Ball(middleScreenX - middleBall, middleScreenY - middleBall);
         // Create field line
-        fieldLine = new FieldLine(this);
+        fieldLine = new FieldLine();
+
+        // Set up parent references
+        leftPaddle.setParent(this);
+        rightPaddle.setParent(this);
+        ball.setParent(this);
+        fieldLine.setParent(this);
 
         // Initialize systems
         scoreManager = new ScoreManager(WINNING_SCORE);
-        keyboardHandler = new KeyboardHandler();
         collisionDetector = new CollisionDetector();
+        keyboardHandler = new KeyboardHandler();
+        shortcuts = new GameShortcuts();
 
         // Register paddles as observers (Observer pattern)
         keyboardHandler.addInputObserver(leftPaddle);
         keyboardHandler.addInputObserver(rightPaddle);
+        keyboardHandler.addInputObserver(shortcuts);
         addKeyListener(keyboardHandler);
 
         // Register collision detection between ball and paddles

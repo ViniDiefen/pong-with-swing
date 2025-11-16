@@ -1,4 +1,4 @@
-package br.com.vinidiefen.pong.entities;
+package br.com.vinidiefen.pong.components;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -7,17 +7,40 @@ import java.awt.Rectangle;
 /**
  * Abstract base class for game objects with position and size
  */
-public abstract class GameObject extends Entity {
+public abstract class GameObject {
 
     protected Component parent;
+
+    protected int x;
+    protected int y;
     protected int width;
     protected int height;
 
-    public GameObject(Component parent, int x, int y, int width, int height) {
-        super(x, y);
-        this.parent = parent;
+    public GameObject() {
+        
+    }
+
+    public GameObject(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public int getWidth() {
@@ -26,6 +49,10 @@ public abstract class GameObject extends Entity {
 
     public int getHeight() {
         return height;
+    }
+
+    public void setParent(Component parent) {
+        this.parent = parent;
     }
 
     public Component getParent() {

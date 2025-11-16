@@ -1,10 +1,10 @@
-package br.com.vinidiefen.pong.entities;
+package br.com.vinidiefen.pong.components;
 
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
 import br.com.vinidiefen.pong.input.InputObserver;
+import br.com.vinidiefen.pong.models.PaddleModel;
 import br.com.vinidiefen.pong.renderers.PaddleRenderer;
 
 /**
@@ -23,10 +23,14 @@ public class Paddle extends GameObject implements InputObserver {
     private int upKey;
     private int downKey;
 
-    public Paddle(Component parent, int x, int y, int upKey, int downKey) {
-        super(parent, x, y, WIDTH, HEIGHT);
+    public Paddle(int x, int y, int upKey, int downKey) {
+        super(x, y, WIDTH, HEIGHT);
         this.upKey = upKey;
         this.downKey = downKey;
+    }
+
+    public Paddle(PaddleModel model) {
+        this(model.getX(), model.getY(), model.getUpKey(), model.getDownKey());
     }
 
     /**
