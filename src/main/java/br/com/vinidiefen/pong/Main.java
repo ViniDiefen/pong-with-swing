@@ -17,15 +17,12 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             configureDefaultFont();
 
-            // Create and setup game
+            // Create and setup game frame
             GameFrame gameFrame = new GameFrame();
-            GamePanel gamePanel = new GamePanel();
-
-            gameFrame.add(gamePanel);
             gameFrame.setVisible(true);
-
-            // Request focus for keyboard input
-            gamePanel.requestFocusInWindow();
+            
+            // Show menu first
+            gameFrame.showMenu();
         });
     }
 
