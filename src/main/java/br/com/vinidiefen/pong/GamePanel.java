@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import br.com.vinidiefen.pong.components.Ball;
 import br.com.vinidiefen.pong.components.FieldLine;
 import br.com.vinidiefen.pong.components.Paddle;
+import br.com.vinidiefen.pong.input.GameShortcuts;
 import br.com.vinidiefen.pong.input.KeyboardHandler;
 import br.com.vinidiefen.pong.physics.CollisionDetector;
 import br.com.vinidiefen.pong.renderers.GameOverRenderer;
@@ -35,6 +36,7 @@ public class GamePanel extends JPanel implements Runnable {
     private ScoreManager scoreManager;
     private KeyboardHandler keyboardHandler;
     private CollisionDetector collisionDetector;
+    private GameShortcuts shortcuts;
 
     // Game loop control
     private Thread gameThread;
@@ -84,12 +86,14 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Initialize systems
         scoreManager = new ScoreManager(WINNING_SCORE);
-        keyboardHandler = new KeyboardHandler();
         collisionDetector = new CollisionDetector();
+        keyboardHandler = new KeyboardHandler();
+        shortcuts = new GameShortcuts();
 
         // Register paddles as observers (Observer pattern)
         keyboardHandler.addInputObserver(leftPaddle);
         keyboardHandler.addInputObserver(rightPaddle);
+        keyboardHandler.addInputObserver(shortcuts);
         addKeyListener(keyboardHandler);
 
         // Register collision detection between ball and paddles
