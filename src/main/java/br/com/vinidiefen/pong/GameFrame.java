@@ -1,5 +1,7 @@
 package br.com.vinidiefen.pong;
 
+import java.util.UUID;
+
 import javax.swing.JFrame;
 
 public class GameFrame extends JFrame {
@@ -61,5 +63,28 @@ public class GameFrame extends JFrame {
         revalidate();
         repaint();
         gamePanel.requestFocusInWindow();
+    }
+    
+    /**
+     * Carrega um jogo salvo
+     */
+    public void loadGame(UUID matchId) {
+        // Remove menu panel
+        if (menuPanel != null) {
+            remove(menuPanel);
+            menuPanel = null;
+        }
+        
+        // Cria game panel e carrega o estado salvo
+        gamePanel = new GamePanel();
+        add(gamePanel);
+        
+        // Atualiza display
+        revalidate();
+        repaint();
+        gamePanel.requestFocusInWindow();
+        
+        // Carrega o jogo após a inicialização
+        gamePanel.loadGameStateFromMenu(matchId);
     }
 }

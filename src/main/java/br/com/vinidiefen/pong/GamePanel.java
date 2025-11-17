@@ -10,6 +10,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -453,6 +454,66 @@ public class GamePanel extends JPanel {
         }
         
         resetButtonAfterDelay(loadButton, "LOAD");
+    }
+    
+    /**
+     * Public method to load game state from menu (without button feedback)
+     */
+    public void loadGameStateFromMenu(UUID matchId) {
+        // Wait for components to be initialized
+        SwingUtilities.invokeLater(() -> {
+            try {
+                System.out.println("=== LOADING GAME STATE FROM MENU ===");
+                System.out.println("Match ID: " + matchId);
+                
+                // Create repositories
+                CRUDRepository<MatchModel> matchRepo = CRUDRepository.of(MatchModel.class);
+                CRUDRepository<PaddleModel> paddleRepo = CRUDRepository.of(PaddleModel.class);
+                CRUDRepository<BallModel> ballRepo = CRUDRepository.of(BallModel.class);
+                CRUDRepository<ScoreManagerModel> scoreRepo = CRUDRepository.of(ScoreManagerModel.class);
+                
+                // Load the specific match
+                MatchModel match = matchRepo.read(matchId);
+                if (match == null) {
+                    System.out.println("Match not found! Starting new game.");
+                    return;
+                }
+                
+                // Load related entities using their IDs
+                PaddleModel leftPaddleModel = paddleRepo.read(match.getLeftPaddleId());
+                PaddleModel rightPaddleModel = paddleRepo.read(match.getRightPaddleId());
+                BallModel ballModel = ballRepo.read(match.getBallId());
+                ScoreManagerModel scoreManagerModel = scoreRepo.read(match.getScoreManagerId());
+                
+                // Restore paddle positions
+                leftPaddle.setX(leftPaddleModel.getX());
+                leftPaddle.setY(leftPaddleModel.getY());
+                rightPaddle.setX(rightPaddleModel.getX());
+                rightPaddle.setY(rightPaddleModel.getY());
+                
+                // Restore ball position and velocity
+                ball.setX(ballModel.getX());
+                ball.setY(ballModel.getY());
+                ball.setVelocityX(ballModel.getVelocityX());
+                ball.setVelocityY(ballModel.getVelocityY());
+                
+                // Restore scores
+                scoreManager.setLeftScore(scoreManagerModel.getLeftScore());
+                scoreManager.setRightScore(scoreManagerModel.getRightScore());
+                
+                System.out.println("Game state loaded successfully!");
+                System.out.println("Left Score: " + scoreManager.getLeftScore());
+                System.out.println("Right Score: " + scoreManager.getRightScore());
+                System.out.println("========================================");
+                
+                // Repaint to show changes
+                repaint();
+                
+            } catch (Exception e) {
+                System.err.println("Error loading game state: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
     
     /**
