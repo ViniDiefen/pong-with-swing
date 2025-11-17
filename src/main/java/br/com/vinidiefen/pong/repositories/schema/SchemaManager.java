@@ -48,30 +48,40 @@ public class SchemaManager {
     public static void main(String[] args) {
         LOGGER.info("Starting database schema creation...");
         SchemaManager manager = new SchemaManager();
-        manager.createAll();
+        manager.recreateAll();
         LOGGER.info("Database schema creation completed.");
     }
 
     /**
      * Scans for all entity classes and creates their tables.
+     * Tables are created in dependency order (parent tables before child tables).
      */
     public void createAll() {
         Set<Class<?>> entityClasses = scanForEntityClasses();
         LOGGER.info("Found " + entityClasses.size() + " entity class(es) to create");
 
-        for (Class<?> entityClass : entityClasses) {
+        // Sort by dependencies to ensure parent tables are created first
+        java.util.List<Class<?>> sortedClasses = DependencyAnalyzer.sortForCreation(entityClasses);
+        LOGGER.info("Tables will be created in dependency order");
+
+        for (Class<?> entityClass : sortedClasses) {
             createTable(entityClass);
         }
     }
 
     /**
      * Scans for all entity classes and drops their tables.
+     * Tables are dropped in reverse dependency order (child tables before parent tables).
      */
     public void dropAll() {
         Set<Class<?>> entityClasses = scanForEntityClasses();
         LOGGER.info("Found " + entityClasses.size() + " entity class(es) to drop");
 
-        for (Class<?> entityClass : entityClasses) {
+        // Sort in reverse dependency order to ensure child tables are dropped first
+        java.util.List<Class<?>> sortedClasses = DependencyAnalyzer.sortForDeletion(entityClasses);
+        LOGGER.info("Tables will be dropped in reverse dependency order");
+
+        for (Class<?> entityClass : sortedClasses) {
             dropTable(entityClass);
         }
     }
@@ -97,7 +107,7 @@ public class SchemaManager {
             String sql = DDLGenerator.generateCreateTable(metadata);
             
             LOGGER.info("Creating table: " + metadata.getTableName());
-            LOGGER.fine("SQL: " + sql);
+            System.out.println("SQL: " + sql);
 
             executeSQL(sql);
             LOGGER.info("Successfully created table: " + metadata.getTableName());

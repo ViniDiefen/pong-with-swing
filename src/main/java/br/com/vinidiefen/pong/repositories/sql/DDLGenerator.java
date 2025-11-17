@@ -1,5 +1,6 @@
 package br.com.vinidiefen.pong.repositories.sql;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,9 +22,15 @@ public class DDLGenerator {
            .append(metadata.getTableName())
            .append(" (");
 
-        List<String> columnDefinitions = metadata.getFieldMetadataList().stream()
+        // Collect column definitions and foreign key constraints
+        List<String> columnDefinitions = new ArrayList<>();
+        metadata.getFieldMetadataList().stream()
                 .map(DDLGenerator::generateColumnDefinition)
-                .collect(Collectors.toList());
+                .forEach(columnDefinitions::add);
+        metadata.getFieldMetadataList().stream()
+                .filter(FieldMetadata::hasForeignKey)
+                .map(DDLGenerator::generateForeignKeyConstraint)
+                .forEach(columnDefinitions::add);
 
         sql.append(String.join(", ", columnDefinitions));
         sql.append(")");
@@ -51,6 +58,18 @@ public class DDLGenerator {
         }
 
         return definition.toString();
+    }
+
+    private static String generateForeignKeyConstraint(FieldMetadata fieldMetadata) {
+        StringBuilder constraint = new StringBuilder();
+        constraint.append("FOREIGN KEY (")
+                  .append(fieldMetadata.getColumnName())
+                  .append(") REFERENCES ")
+                  .append(fieldMetadata.getForeignKey().table())
+                  .append("(")
+                  .append(fieldMetadata.getForeignKey().column())
+                  .append(")");
+        return constraint.toString();
     }
 
     /**

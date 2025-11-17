@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import br.com.vinidiefen.pong.repositories.annotations.Column;
+import br.com.vinidiefen.pong.repositories.annotations.ForeignKey;
 import br.com.vinidiefen.pong.repositories.annotations.Table;
 
 /**
@@ -36,8 +37,9 @@ public class EntityMetadata<T> {
         
         for (Field field : fields) {
             Column column = field.getAnnotation(Column.class);
+            ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
             if (column != null) {
-                metadata.add(new FieldMetadata(field, column));
+                metadata.add(new FieldMetadata(field, column, foreignKey));
             }
         }
         

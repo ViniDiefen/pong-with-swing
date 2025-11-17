@@ -1,8 +1,10 @@
 package br.com.vinidiefen.pong.repositories.metadata;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 import br.com.vinidiefen.pong.repositories.annotations.Column;
+import br.com.vinidiefen.pong.repositories.annotations.ForeignKey;
 
 /**
  * Stores metadata about a single field (similar to Hibernate's PropertyAccessor)
@@ -10,10 +12,12 @@ import br.com.vinidiefen.pong.repositories.annotations.Column;
 public class FieldMetadata {
     private final Field field;
     private final Column column;
+    private final ForeignKey foreignKey;
 
-    public FieldMetadata(Field field, Column column) {
+    public FieldMetadata(Field field, Column column, ForeignKey foreignKey) {
         this.field = field;
         this.column = column;
+        this.foreignKey = foreignKey;
         // Make field accessible for reflection
         this.field.setAccessible(true);
     }
@@ -24,6 +28,10 @@ public class FieldMetadata {
 
     public Column getColumn() {
         return column;
+    }
+
+    public ForeignKey getForeignKey() {
+        return foreignKey;
     }
 
     public String getColumnName() {
@@ -48,6 +56,10 @@ public class FieldMetadata {
 
     public String getDefaultValue() {
         return column.defaultValue();
+    }
+
+    public boolean hasForeignKey() {
+        return foreignKey != null && !foreignKey.table().isEmpty() && !foreignKey.column().isEmpty();
     }
 
     /**
