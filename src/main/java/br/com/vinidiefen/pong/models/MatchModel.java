@@ -1,5 +1,7 @@
 package br.com.vinidiefen.pong.models;
 
+import java.util.UUID;
+
 import br.com.vinidiefen.pong.repositories.annotations.Column;
 import br.com.vinidiefen.pong.repositories.annotations.ForeignKey;
 import br.com.vinidiefen.pong.repositories.annotations.Table;
@@ -9,55 +11,66 @@ public class MatchModel extends UUIDObjectModel {
 
     @ForeignKey(table = "paddles", column = "id")
     @Column(name = "left_paddle_id", type = "UUID", notNull = true)
-    private PaddleModel leftPaddle;
+    private UUID leftPaddleId;
+    
     @ForeignKey(table = "paddles", column = "id")
     @Column(name = "right_paddle_id", type = "UUID", notNull = true)
-    private PaddleModel rightPaddle;
+    private UUID rightPaddleId;
+    
     @ForeignKey(table = "balls", column = "id")
     @Column(name = "ball_id", type = "UUID", notNull = true)
-    private BallModel ball;
+    private UUID ballId;
+    
     @ForeignKey(table = "score_manager", column = "id")
     @Column(name = "score_manager_id", type = "UUID", notNull = true)
-    private ScoreManagerModel scoreManager;
+    private UUID scoreManagerId;
 
-    public MatchModel(PaddleModel leftPaddle, PaddleModel rightPaddle, BallModel ball, ScoreManagerModel scoreManager) {
+    public MatchModel() {
+    }
+
+    public MatchModel(UUID leftPaddleId, UUID rightPaddleId, UUID ballId, UUID scoreManagerId) {
         super();
-        this.leftPaddle = leftPaddle;
-        this.rightPaddle = rightPaddle;
-        this.ball = ball;
-        this.scoreManager = scoreManager;
+        this.leftPaddleId = leftPaddleId;
+        this.rightPaddleId = rightPaddleId;
+        this.ballId = ballId;
+        this.scoreManagerId = scoreManagerId;
+    }
+    
+    // Convenience constructor that accepts Model objects and extracts their IDs
+    public MatchModel(PaddleModel leftPaddle, PaddleModel rightPaddle, BallModel ball, ScoreManagerModel scoreManager) {
+        this(leftPaddle.getId(), rightPaddle.getId(), ball.getId(), scoreManager.getId());
     }
 
-    public PaddleModel getLeftPaddle() {
-        return leftPaddle;
+    public UUID getLeftPaddleId() {
+        return leftPaddleId;
     }
 
-    public void setLeftPaddle(PaddleModel leftPaddle) {
-        this.leftPaddle = leftPaddle;
+    public void setLeftPaddleId(UUID leftPaddleId) {
+        this.leftPaddleId = leftPaddleId;
     }
 
-    public PaddleModel getRightPaddle() {
-        return rightPaddle;
+    public UUID getRightPaddleId() {
+        return rightPaddleId;
     }
 
-    public void setRightPaddle(PaddleModel rightPaddle) {
-        this.rightPaddle = rightPaddle;
+    public void setRightPaddleId(UUID rightPaddleId) {
+        this.rightPaddleId = rightPaddleId;
     }
 
-    public BallModel getBall() {
-        return ball;
+    public UUID getBallId() {
+        return ballId;
     }
 
-    public void setBall(BallModel ball) {
-        this.ball = ball;
+    public void setBallId(UUID ballId) {
+        this.ballId = ballId;
     }
 
-    public ScoreManagerModel getScoreManager() {
-        return scoreManager;
+    public UUID getScoreManagerId() {
+        return scoreManagerId;
     }
 
-    public void setScoreManager(ScoreManagerModel scoreManager) {
-        this.scoreManager = scoreManager;
+    public void setScoreManagerId(UUID scoreManagerId) {
+        this.scoreManagerId = scoreManagerId;
     }
 
 }

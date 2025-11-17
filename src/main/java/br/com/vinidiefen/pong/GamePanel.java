@@ -22,8 +22,13 @@ import br.com.vinidiefen.pong.components.FieldLine;
 import br.com.vinidiefen.pong.components.Paddle;
 import br.com.vinidiefen.pong.input.GameShortcuts;
 import br.com.vinidiefen.pong.input.KeyboardHandler;
+import br.com.vinidiefen.pong.models.BallModel;
+import br.com.vinidiefen.pong.models.MatchModel;
+import br.com.vinidiefen.pong.models.PaddleModel;
+import br.com.vinidiefen.pong.models.ScoreManagerModel;
 import br.com.vinidiefen.pong.physics.CollisionDetector;
 import br.com.vinidiefen.pong.renderers.GameOverRenderer;
+import br.com.vinidiefen.pong.repositories.CRUDRepository;
 
 /**
  * Game Panel com implementação de Game Loop
@@ -51,6 +56,7 @@ public class GamePanel extends JPanel {
     // UI Components
     private JButton pauseButton;
     private JButton saveButton;
+    private JButton loadButton;
 
     public GamePanel() {
         setBackground(Color.BLACK);
@@ -72,6 +78,10 @@ public class GamePanel extends JPanel {
                 // Update save button position on resize
                 if (saveButton != null) {
                     updateSaveButtonPosition();
+                }
+                // Update load button position on resize
+                if (loadButton != null) {
+                    updateLoadButtonPosition();
                 }
             }
         });
@@ -126,6 +136,9 @@ public class GamePanel extends JPanel {
         
         // Create save button (initially hidden)
         createSaveButton();
+        
+        // Create load button (initially hidden)
+        createLoadButton();
 
         // Start game loop thread
         currentState = GameState.PLAYING;
@@ -220,6 +233,50 @@ public class GamePanel extends JPanel {
     }
     
     /**
+     * Creates the load button (visible only when paused)
+     */
+    private void createLoadButton() {
+        loadButton = new JButton("LOAD");
+        
+        // Get font from UIManager
+        Font buttonFont = (Font) UIManager.get("Label.font");
+        if (buttonFont != null) {
+            loadButton.setFont(buttonFont.deriveFont(12f));
+        }
+        
+        // Button style
+        loadButton.setPreferredSize(new Dimension(80, 40));
+        loadButton.setForeground(Color.WHITE);
+        loadButton.setBackground(new Color(0, 0, 0, 150)); // Semi-transparent black
+        loadButton.setBorder(new LineBorder(Color.WHITE, 2));
+        loadButton.setFocusPainted(false);
+        loadButton.setContentAreaFilled(false);
+        loadButton.setOpaque(false);
+        loadButton.setVisible(false); // Initially hidden
+        
+        // Hover effect
+        loadButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                loadButton.setForeground(new Color(100, 200, 255));
+                loadButton.setBorder(new LineBorder(new Color(100, 200, 255), 2));
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                loadButton.setForeground(Color.WHITE);
+                loadButton.setBorder(new LineBorder(Color.WHITE, 2));
+            }
+        });
+        
+        // Load game state on click
+        loadButton.addActionListener(e -> loadGameState());
+        
+        updateLoadButtonPosition();
+        add(loadButton);
+    }
+    
+    /**
      * Updates the pause button position in the top-right corner
      */
     private void updatePauseButtonPosition() {
@@ -242,6 +299,18 @@ public class GamePanel extends JPanel {
     }
     
     /**
+     * Updates the load button position below the save button
+     */
+    private void updateLoadButtonPosition() {
+        int margin = 10;
+        int buttonWidth = 80;
+        int buttonHeight = 40;
+        int spacing = 10;
+        // Position below save button
+        loadButton.setBounds(getWidth() - buttonWidth - margin, margin + 2 * (buttonHeight + spacing), buttonWidth, buttonHeight);
+    }
+    
+    /**
      * Toggles between playing and paused states
      */
     private void togglePause() {
@@ -249,10 +318,12 @@ public class GamePanel extends JPanel {
             currentState = GameState.PAUSED;
             pauseButton.setText("PLAY");
             saveButton.setVisible(true); // Show save button when paused
+            loadButton.setVisible(true); // Show load button when paused
         } else if (currentState == GameState.PAUSED) {
             currentState = GameState.PLAYING;
             pauseButton.setText("PAUSE");
             saveButton.setVisible(false); // Hide save button when playing
+            loadButton.setVisible(false); // Hide load button when playing
         }
         repaint();
         requestFocusInWindow(); // Return focus to panel for keyboard input
@@ -262,26 +333,138 @@ public class GamePanel extends JPanel {
      * Saves the current game state
      */
     private void saveGameState() {
-        // TODO: Implement game state persistence
-        System.out.println("=== SAVING GAME STATE ===");
-        System.out.println("Left Paddle Score: " + scoreManager.getLeftScore());
-        System.out.println("Right Paddle Score: " + scoreManager.getRightScore());
-        System.out.println("Ball Position: (" + ball.getX() + ", " + ball.getY() + ")");
-        System.out.println("Left Paddle Position: (" + leftPaddle.getX() + ", " + leftPaddle.getY() + ")");
-        System.out.println("Right Paddle Position: (" + rightPaddle.getX() + ", " + rightPaddle.getY() + ")");
-        System.out.println("========================");
+        try {
+            System.out.println("=== SAVING GAME STATE ===");
+            
+            // Create model instances from current game state
+            PaddleModel leftPaddleModel = new PaddleModel(leftPaddle);
+            PaddleModel rightPaddleModel = new PaddleModel(rightPaddle);
+            BallModel ballModel = new BallModel(ball);
+            ScoreManagerModel scoreManagerModel = new ScoreManagerModel(
+                WINNING_SCORE,
+                scoreManager.getLeftScore(),
+                scoreManager.getRightScore()
+            );
+            
+            // Create repositories
+            CRUDRepository<PaddleModel> paddleRepo = CRUDRepository.of(PaddleModel.class);
+            CRUDRepository<BallModel> ballRepo = CRUDRepository.of(BallModel.class);
+            CRUDRepository<ScoreManagerModel> scoreRepo = CRUDRepository.of(ScoreManagerModel.class);
+            CRUDRepository<MatchModel> matchRepo = CRUDRepository.of(MatchModel.class);
+            
+            // Save entities to database
+            paddleRepo.create(leftPaddleModel);
+            paddleRepo.create(rightPaddleModel);
+            ballRepo.create(ballModel);
+            scoreRepo.create(scoreManagerModel);
+            
+            // Create and save match with references
+            MatchModel matchModel = new MatchModel(leftPaddleModel, rightPaddleModel, ballModel, scoreManagerModel);
+            matchRepo.create(matchModel);
+            
+            System.out.println("Game state saved successfully to database!");
+            System.out.println("Match ID: " + matchModel.getId());
+            System.out.println("========================");
+            
+            // Visual feedback
+            saveButton.setText("SAVED!");
+            saveButton.setForeground(new Color(100, 200, 100));
+            
+        } catch (Exception e) {
+            System.err.println("Error saving game state: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Error feedback
+            saveButton.setText("ERROR!");
+            saveButton.setForeground(new Color(200, 100, 100));
+        }
         
-        // Visual feedback
-        saveButton.setText("SAVED!");
-        saveButton.setForeground(new Color(100, 200, 100));
+        resetButtonAfterDelay(saveButton, "SAVE");
+    }
+    
+    /**
+     * Loads the most recent saved game state from the database
+     */
+    private void loadGameState() {
+        try {
+            System.out.println("=== LOADING GAME STATE ===");
+            
+            // Create repositories
+            CRUDRepository<MatchModel> matchRepo = CRUDRepository.of(MatchModel.class);
+            CRUDRepository<PaddleModel> paddleRepo = CRUDRepository.of(PaddleModel.class);
+            CRUDRepository<BallModel> ballRepo = CRUDRepository.of(BallModel.class);
+            CRUDRepository<ScoreManagerModel> scoreRepo = CRUDRepository.of(ScoreManagerModel.class);
+            
+            // Get all matches and find the most recent one
+            var matches = matchRepo.findAll();
+            if (matches.isEmpty()) {
+                System.out.println("No saved games found!");
+                loadButton.setText("EMPTY!");
+                loadButton.setForeground(new Color(200, 200, 100));
+                resetButtonAfterDelay(loadButton, "LOAD");
+                return;
+            }
+            
+            // Get the last match (most recent)
+            MatchModel lastMatch = matches.get(matches.size() - 1);
+            
+            // Load related entities using their IDs
+            PaddleModel leftPaddleModel = paddleRepo.read(lastMatch.getLeftPaddleId());
+            PaddleModel rightPaddleModel = paddleRepo.read(lastMatch.getRightPaddleId());
+            BallModel ballModel = ballRepo.read(lastMatch.getBallId());
+            ScoreManagerModel scoreManagerModel = scoreRepo.read(lastMatch.getScoreManagerId());
+            
+            // Restore paddle positions
+            leftPaddle.setX(leftPaddleModel.getX());
+            leftPaddle.setY(leftPaddleModel.getY());
+            rightPaddle.setX(rightPaddleModel.getX());
+            rightPaddle.setY(rightPaddleModel.getY());
+            
+            // Restore ball position and velocity
+            ball.setX(ballModel.getX());
+            ball.setY(ballModel.getY());
+            ball.setVelocityX(ballModel.getVelocityX());
+            ball.setVelocityY(ballModel.getVelocityY());
+            
+            // Restore scores
+            scoreManager.setLeftScore(scoreManagerModel.getLeftScore());
+            scoreManager.setRightScore(scoreManagerModel.getRightScore());
+            
+            System.out.println("Game state loaded successfully!");
+            System.out.println("Match ID: " + lastMatch.getId());
+            System.out.println("Left Score: " + scoreManager.getLeftScore());
+            System.out.println("Right Score: " + scoreManager.getRightScore());
+            System.out.println("========================");
+            
+            // Visual feedback
+            loadButton.setText("OK!");
+            loadButton.setForeground(new Color(100, 200, 255));
+            
+            // Repaint to show changes
+            repaint();
+            
+        } catch (Exception e) {
+            System.err.println("Error loading game state: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Error feedback
+            loadButton.setText("ERROR!");
+            loadButton.setForeground(new Color(200, 100, 100));
+        }
         
-        // Reset button text after 2 seconds
+        resetButtonAfterDelay(loadButton, "LOAD");
+    }
+    
+    /**
+     * Helper method to reset button text after a delay
+     */
+    private void resetButtonAfterDelay(JButton button, String originalText) {
         new Thread(() -> {
             try {
                 Thread.sleep(2000);
                 SwingUtilities.invokeLater(() -> {
-                    saveButton.setText("SAVE");
-                    saveButton.setForeground(Color.WHITE);
+                    button.setText(originalText);
+                    button.setForeground(Color.WHITE);
                 });
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

@@ -12,6 +12,10 @@ public class BallModel extends GameObjectModel {
     @Column(name = "velocity_y", type = "INTEGER", notNull = true)
     private int velocityY;
 
+    public BallModel() {
+        super();
+    }
+
     public BallModel(Ball ball) {
         super(ball);
         this.velocityX = ball.getVelocityX();

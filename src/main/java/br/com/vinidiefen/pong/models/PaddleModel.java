@@ -12,6 +12,10 @@ public class PaddleModel extends GameObjectModel {
     @Column(name = "down_key", type = "INTEGER", notNull = true)
     private int downKey;
 
+    public PaddleModel() {
+        super();
+    }
+
     public PaddleModel(Paddle paddle) {
         super(paddle);
         this.upKey = paddle.getUpKey();

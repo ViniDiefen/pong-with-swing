@@ -10,6 +10,10 @@ public abstract class GameObjectModel extends UUIDObjectModel {
     @Column(name = "y", type = "INTEGER", notNull = true)
     protected int y;
 
+    public GameObjectModel() {
+        super();
+    }
+
     public GameObjectModel(GameObject gameObject) {
         super();
         this.x = gameObject.getX();

@@ -13,6 +13,10 @@ public class ScoreManagerModel extends UUIDObjectModel {
     @Column(name = "winning_score", type = "INTEGER")
     public int winningScore;
 
+    public ScoreManagerModel() {
+        super();
+    }
+
     public ScoreManagerModel(int winningScore, int leftScore, int rightScore) {
         super();
         this.winningScore = winningScore;

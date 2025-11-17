@@ -29,6 +29,7 @@ public class ResultSetMapper {
 
             return entity;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException("Failed to map ResultSet to entity " + metadata.getEntityClass().getName(), e);
         }
     }
