@@ -1,7 +1,6 @@
 package br.com.vinidiefen.pong.repositories.metadata;
 
 import java.lang.reflect.Field;
-import java.util.Optional;
 
 import br.com.vinidiefen.pong.repositories.annotations.Column;
 import br.com.vinidiefen.pong.repositories.annotations.ForeignKey;

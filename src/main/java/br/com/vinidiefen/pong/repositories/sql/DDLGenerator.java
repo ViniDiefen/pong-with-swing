@@ -2,7 +2,6 @@ package br.com.vinidiefen.pong.repositories.sql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.com.vinidiefen.pong.repositories.metadata.EntityMetadata;
 import br.com.vinidiefen.pong.repositories.metadata.FieldMetadata;
