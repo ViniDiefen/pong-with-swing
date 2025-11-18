@@ -95,14 +95,6 @@ public class MenuPanel extends JPanel {
         try {
             var matches = gameStateService.getAllMatches();
 
-            if (matches.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "Nenhum jogo salvo encontrado!",
-                        "Carregar Jogo",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
             // Show dialog to select a save
             SaveGameDialog.show(this, matches, gameStateService, (var id) -> {
                 gameFrame.setMatchId(id);
