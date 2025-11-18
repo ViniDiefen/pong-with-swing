@@ -50,7 +50,7 @@ public class GamePanel extends JPanel {
     private GameLoop gameLoopThread;
     private volatile GameState currentState = GameState.STOPPED;
 
-    // Match ID to load after initialization
+    // Match ID to load on initialization
     private UUID pendingMatchIdToLoad;
 
     // UI Components
@@ -242,7 +242,6 @@ public class GamePanel extends JPanel {
             setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_SAVED, UIConstants.SUCCESS_COLOR); // Visual feedback
         } catch (Exception e) {
             System.err.println("Error saving game state: " + e.getMessage());
-            e.printStackTrace();
             setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_ERROR, UIConstants.ERROR_COLOR); // Error feedback
         }
     }
@@ -305,10 +304,10 @@ public class GamePanel extends JPanel {
      * Sets button visual feedback (text and color)
      */
     private void setButtonFeedback(JButton button, String text, Color color) {
-        String previouString = button.getText();
+        String previousString = button.getText();
         button.setText(text);
         button.setForeground(color);
-        resetButtonAfterDelay(button, previouString);
+        resetButtonAfterDelay(button, previousString);
     }
 
     /**
@@ -395,16 +394,7 @@ public class GamePanel extends JPanel {
      * Draws the game over screen
      */
     private void drawGameOver(Graphics g) {
-        int screenWidth = getWidth();
-        int screenHeight = getHeight();
-
-        if (screenWidth <= 0 || screenHeight <= 0) {
-            return;
-        }
-
-        // Semi-transparent overlay
-        g.setColor(UIConstants.OVERLAY_DARK);
-        g.fillRect(0, 0, screenWidth, screenHeight);
+        drawSemiTransparentOverlay(g);
 
         // Winner text
         g.setColor(Color.WHITE);
@@ -412,23 +402,21 @@ public class GamePanel extends JPanel {
 
         String winnerText = "Player " + scoreManager.getWinner() + " Wins!";
         int textWidth = g.getFontMetrics().stringWidth(winnerText);
-        g.drawString(winnerText, screenWidth / 2 - textWidth / 2, screenHeight / 2);
+        g.drawString(winnerText, getWidth() / 2 - textWidth / 2, getHeight() / 2);
 
         // Instructions
         g.setFont(new Font("Arial", Font.PLAIN, (int) UIConstants.MEDIUM_TEXT_SIZE));
         String instructions = "Press ESC to exit";
         textWidth = g.getFontMetrics().stringWidth(instructions);
-        g.drawString(instructions, screenWidth / 2 - textWidth / 2,
-                screenHeight / 2 + UIConstants.GAME_OVER_INSTRUCTION_OFFSET);
+        g.drawString(instructions, getWidth() / 2 - textWidth / 2,
+                getHeight() / 2 + UIConstants.GAME_OVER_INSTRUCTION_OFFSET);
     }
 
     /**
      * Draws the paused overlay
      */
     private void drawPausedOverlay(Graphics g) {
-        // Semi-transparent overlay
-        g.setColor(UIConstants.OVERLAY_COLOR);
-        g.fillRect(0, 0, getWidth(), getHeight());
+        drawSemiTransparentOverlay(g);
 
         // "PAUSED" text
         g.setFont(FontUtils.getDefaultFont(Font.BOLD, UIConstants.PAUSED_TEXT_SIZE));
@@ -439,6 +427,14 @@ public class GamePanel extends JPanel {
         int x = (getWidth() - textWidth) / 2;
         int y = getHeight() / 2;
         g.drawString(text, x, y);
+    }
+
+    /**
+     * Draws a semi-transparent overlay covering the entire panel
+     */
+    public void drawSemiTransparentOverlay(Graphics g) {
+        g.setColor(UIConstants.OVERLAY_COLOR);
+        g.fillRect(0, 0, getWidth(), getHeight());
     }
 
     /**
