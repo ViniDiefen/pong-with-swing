@@ -27,6 +27,16 @@ public class SchemaManager {
     private final String modelPackage;
 
     /**
+     * Main method for standalone schema creation.
+     */
+    public static void main(String[] args) {
+        LOGGER.info("Starting database schema creation...");
+        SchemaManager manager = new SchemaManager();
+        manager.recreateAll();
+        LOGGER.info("Database schema creation completed.");
+    }
+
+    /**
      * Creates a SchemaManager for the default model package.
      */
     public SchemaManager() {
@@ -40,16 +50,6 @@ public class SchemaManager {
      */
     public SchemaManager(String modelPackage) {
         this.modelPackage = modelPackage;
-    }
-
-    /**
-     * Main method for standalone schema creation.
-     */
-    public static void main(String[] args) {
-        LOGGER.info("Starting database schema creation...");
-        SchemaManager manager = new SchemaManager();
-        manager.recreateAll();
-        LOGGER.info("Database schema creation completed.");
     }
 
     /**
