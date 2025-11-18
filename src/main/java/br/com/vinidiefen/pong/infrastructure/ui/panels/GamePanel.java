@@ -10,24 +10,22 @@ import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import br.com.vinidiefen.pong.domain.entities.Ball;
+import br.com.vinidiefen.pong.application.services.GameStateService;
+import br.com.vinidiefen.pong.application.services.GameStateService.LoadedGameState;
+import br.com.vinidiefen.pong.constants.GameConstants;
+import br.com.vinidiefen.pong.constants.GameState;
+import br.com.vinidiefen.pong.constants.InputConstants;
+import br.com.vinidiefen.pong.constants.UIConstants;
 import br.com.vinidiefen.pong.core.collision.CollisionDetector;
+import br.com.vinidiefen.pong.domain.entities.Ball;
 import br.com.vinidiefen.pong.domain.entities.FieldLine;
 import br.com.vinidiefen.pong.domain.entities.Paddle;
 import br.com.vinidiefen.pong.domain.managers.ScoreManager;
-import br.com.vinidiefen.pong.constants.GameConstants;
-import br.com.vinidiefen.pong.constants.GameState;
-import br.com.vinidiefen.pong.constants.UIConstants;
+import br.com.vinidiefen.pong.infrastructure.ui.factories.ButtonFactory;
 import br.com.vinidiefen.pong.input.handlers.GameShortcuts;
 import br.com.vinidiefen.pong.input.handlers.KeyboardHandler;
-import br.com.vinidiefen.pong.constants.InputConstants;
-import br.com.vinidiefen.pong.application.services.GameStateService;
-import br.com.vinidiefen.pong.application.services.GameStateService.LoadedGameState;
-import br.com.vinidiefen.pong.infrastructure.ui.factories.ButtonFactory;
-import br.com.vinidiefen.pong.core.engine.GameLoop;
 
 /**
  * Game Panel com implementação de Game Loop
@@ -69,20 +67,25 @@ public class GamePanel extends JPanel {
                 if (leftPaddle == null && getWidth() > 0 && getHeight() > 0) {
                     initializeGame();
                 }
-                // Update pause button position on resize
-                if (pauseButton != null) {
-                    updatePauseButtonPosition();
-                }
-                // Update save button position on resize
-                if (saveButton != null) {
-                    updateSaveButtonPosition();
-                }
-                // Update load button position on resize
-                if (loadButton != null) {
-                    updateLoadButtonPosition();
-                }
+                // Update all button positions on resize
+                updateAllButtonPositions();
             }
         });
+    }
+
+    /**
+     * Update positions of all buttons
+     */
+    private void updateAllButtonPositions() {
+        if (pauseButton != null) {
+            updateButtonPosition(pauseButton, 0);
+        }
+        if (saveButton != null) {
+            updateButtonPosition(saveButton, 1);
+        }
+        if (loadButton != null) {
+            updateButtonPosition(loadButton, 2);
+        }
     }
 
     /**
@@ -134,11 +137,10 @@ public class GamePanel extends JPanel {
         
         // Create save button (initially hidden)
         createSaveButton();
-        
         // Create load button (initially hidden)
         createLoadButton();
 
-        // Start game loop thread
+        // Start game loop with Thread-based implementation
         currentState = GameState.PLAYING;
         gameLoopThread.start();
     }
@@ -184,27 +186,6 @@ public class GamePanel extends JPanel {
         int x = getWidth() - UIConstants.SMALL_BUTTON_WIDTH - UIConstants.BUTTON_MARGIN;
         int y = UIConstants.BUTTON_MARGIN + index * (UIConstants.SMALL_BUTTON_HEIGHT + UIConstants.BUTTON_SPACING);
         button.setBounds(x, y, UIConstants.SMALL_BUTTON_WIDTH, UIConstants.SMALL_BUTTON_HEIGHT);
-    }
-    
-    /**
-     * Updates the pause button position in the top-right corner
-     */
-    private void updatePauseButtonPosition() {
-        updateButtonPosition(pauseButton, 0);
-    }
-    
-    /**
-     * Updates the save button position below the pause button
-     */
-    private void updateSaveButtonPosition() {
-        updateButtonPosition(saveButton, 1);
-    }
-    
-    /**
-     * Updates the load button position below the save button
-     */
-    private void updateLoadButtonPosition() {
-        updateButtonPosition(loadButton, 2);
     }
     
     /**
@@ -290,20 +271,18 @@ public class GamePanel extends JPanel {
     }
     
     /**
-     * Public method to load game state from menu (without button feedback)
+     * Public method to load game state from menu
+     * Since game loop now runs on EDT via Timer, this is already thread-safe
      */
     public void loadGameStateFromMenu(UUID matchId) {
-        // Wait for components to be initialized
-        SwingUtilities.invokeLater(() -> {
-            try {
-                LoadedGameState state = gameStateService.loadGameState(matchId);
-                applyLoadedState(state);
-                repaint();
-            } catch (Exception e) {
-                System.err.println("Error loading game state: " + e.getMessage());
-                e.printStackTrace();
-            }
-        });
+        try {
+            LoadedGameState state = gameStateService.loadGameState(matchId);
+            applyLoadedState(state);
+            repaint();
+        } catch (Exception e) {
+            System.err.println("Error loading game state: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -328,20 +307,15 @@ public class GamePanel extends JPanel {
     }
     
     /**
-     * Helper method to reset button text after a delay
+     * Resets button appearance after a delay using Swing Timer (thread-safe)
      */
     private void resetButtonAfterDelay(JButton button, String originalText) {
-        new Thread(() -> {
-            try {
-                Thread.sleep(UIConstants.BUTTON_FEEDBACK_DELAY);
-                SwingUtilities.invokeLater(() -> {
-                    button.setText(originalText);
-                    button.setForeground(UIConstants.TEXT_COLOR);
-                });
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }).start();
+        javax.swing.Timer timer = new javax.swing.Timer(UIConstants.BUTTON_FEEDBACK_DELAY, e -> {
+            button.setText(originalText);
+            button.setForeground(UIConstants.TEXT_COLOR);
+        });
+        timer.setRepeats(false); // Execute only once
+        timer.start();
     }
 
     /**
@@ -467,18 +441,11 @@ public class GamePanel extends JPanel {
     }
 
     /**
-     * Stop completely the game loop
+     * Stop the game completely
      */
     public void stop() {
         currentState = GameState.STOPPED;
-        try {
-            if (gameLoopThread != null) {
-                // Wait 1 second for the thread to finish
-                gameLoopThread.join(1000);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // Thread will stop automatically when isGameLoopActive() returns false
     }
 
     public boolean isGameLoopActive() {

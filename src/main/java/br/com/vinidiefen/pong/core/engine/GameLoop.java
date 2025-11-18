@@ -35,7 +35,7 @@ public class GameLoop extends Thread {
             lastTime = now;
 
             // Update
-            while (delta >= 1) {
+            if (delta >= 1) {
                 if (gamePanel.gameLoopShouldUpdate()) {
                     gamePanel.updateComponents();
                 }
