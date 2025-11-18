@@ -18,6 +18,7 @@ import br.com.vinidiefen.pong.constants.GameState;
 import br.com.vinidiefen.pong.constants.InputConstants;
 import br.com.vinidiefen.pong.constants.UIConstants;
 import br.com.vinidiefen.pong.core.collision.CollisionDetector;
+import br.com.vinidiefen.pong.core.engine.GameLoop;
 import br.com.vinidiefen.pong.domain.entities.Ball;
 import br.com.vinidiefen.pong.domain.entities.FieldLine;
 import br.com.vinidiefen.pong.domain.entities.Paddle;
@@ -28,7 +29,7 @@ import br.com.vinidiefen.pong.input.handlers.GameShortcuts;
 import br.com.vinidiefen.pong.input.handlers.KeyboardHandler;
 
 /**
- * Game Panel com implementação de Game Loop
+ * Game Panel where the Pong game runs
  */
 public class GamePanel extends JPanel {
 
@@ -46,22 +47,28 @@ public class GamePanel extends JPanel {
     private GameStateService gameStateService;
 
     // Game states/loop control
-    private br.com.vinidiefen.pong.core.engine.GameLoop gameLoopThread;
+    private GameLoop gameLoopThread;
     private volatile GameState currentState = GameState.STOPPED;
-    
+
     // Match ID to load after initialization
-    private UUID pendingMatchIdToLoad = null;
-    
+    private UUID pendingMatchIdToLoad;
+
     // UI Components
     private JButton pauseButton;
     private JButton saveButton;
     private JButton loadButton;
 
     public GamePanel() {
+        this(null);
+    }
+
+    public GamePanel(UUID matchId) {
         setBackground(Color.BLACK);
         setFocusable(true);
+        // Use absolute positioning for the pause button
         setLayout(null); // Use absolute positioning for the pause button
 
+        this.pendingMatchIdToLoad = matchId;
         // Listen for component resize events to get actual dimensions
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -96,18 +103,20 @@ public class GamePanel extends JPanel {
      */
     private void initializeGame() {
         // Instance the game loop thread
-        this.gameLoopThread = new br.com.vinidiefen.pong.core.engine.GameLoop(this);
+        this.gameLoopThread = new GameLoop(this);
 
         // Create paddles with configurable keys
         int middleScreenY = getHeight() / 2;
         int middleScreenX = getWidth() / 2;
 
-    int paddleMargin = GameConstants.PADDLE_MARGIN;
-    int middlePaddleY = GameConstants.PADDLE_HEIGHT / 2;
+        int paddleMargin = GameConstants.PADDLE_MARGIN;
+        int middlePaddleY = GameConstants.PADDLE_HEIGHT / 2;
 
-    int middleBall = GameConstants.BALL_SIZE / 2;
-    leftPaddle = new Paddle(paddleMargin, middleScreenY - middlePaddleY, InputConstants.LEFT_PADDLE_UP, InputConstants.LEFT_PADDLE_DOWN);
-    rightPaddle = new Paddle(getWidth() - paddleMargin - GameConstants.PADDLE_WIDTH, middleScreenY - middlePaddleY, InputConstants.RIGHT_PADDLE_UP, InputConstants.RIGHT_PADDLE_DOWN);
+        int middleBall = GameConstants.BALL_SIZE / 2;
+        leftPaddle = new Paddle(paddleMargin, middleScreenY - middlePaddleY, InputConstants.LEFT_PADDLE_UP,
+                InputConstants.LEFT_PADDLE_DOWN);
+        rightPaddle = new Paddle(getWidth() - paddleMargin - GameConstants.PADDLE_WIDTH, middleScreenY - middlePaddleY,
+                InputConstants.RIGHT_PADDLE_UP, InputConstants.RIGHT_PADDLE_DOWN);
         // Create ball
         ball = new Ball(middleScreenX - middleBall, middleScreenY - middleBall);
         // Create field line
@@ -134,10 +143,10 @@ public class GamePanel extends JPanel {
 
         // Register collision detection between ball and paddles
         collisionDetector.addCollisionObserver(ball, leftPaddle, rightPaddle);
-        
+
         // Create pause button
         createPauseButton();
-        
+
         // Create save button (initially hidden)
         createSaveButton();
         // Create load button (initially hidden)
@@ -146,7 +155,7 @@ public class GamePanel extends JPanel {
         // Start game loop with Thread-based implementation
         currentState = GameState.PLAYING;
         gameLoopThread.start();
-        
+
         // If there's a pending match to load, load it now
         if (pendingMatchIdToLoad != null) {
             try {
@@ -160,7 +169,7 @@ public class GamePanel extends JPanel {
             }
         }
     }
-    
+
     /**
      * Creates the pause button in the top-right corner
      */
@@ -170,7 +179,7 @@ public class GamePanel extends JPanel {
         updateButtonPosition(pauseButton, 0);
         add(pauseButton);
     }
-    
+
     /**
      * Creates the save button (visible only when paused)
      */
@@ -181,7 +190,7 @@ public class GamePanel extends JPanel {
         updateButtonPosition(saveButton, 1);
         add(saveButton);
     }
-    
+
     /**
      * Creates the load button (visible only when paused)
      */
@@ -192,18 +201,19 @@ public class GamePanel extends JPanel {
         updateButtonPosition(loadButton, 2);
         add(loadButton);
     }
-    
+
     /**
      * Updates button position in the top-right corner stack
+     * 
      * @param button The button to position
-     * @param index The stack index (0 = top, 1 = second, 2 = third)
+     * @param index  The stack index (0 = top, 1 = second, 2 = third)
      */
     private void updateButtonPosition(JButton button, int index) {
         int x = getWidth() - UIConstants.SMALL_BUTTON_WIDTH - UIConstants.BUTTON_MARGIN;
         int y = UIConstants.BUTTON_MARGIN + index * (UIConstants.SMALL_BUTTON_HEIGHT + UIConstants.BUTTON_SPACING);
         button.setBounds(x, y, UIConstants.SMALL_BUTTON_WIDTH, UIConstants.SMALL_BUTTON_HEIGHT);
     }
-    
+
     /**
      * Toggles between playing and paused states
      */
@@ -222,28 +232,23 @@ public class GamePanel extends JPanel {
         repaint();
         requestFocusInWindow(); // Return focus to panel for keyboard input
     }
-    
+
     /**
      * Saves the current game state
      */
     private void saveGameState() {
         try {
             gameStateService.saveGameState(leftPaddle, rightPaddle, ball, scoreManager);
-            
-            // Visual feedback
-            setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_SAVED, UIConstants.SUCCESS_COLOR);
-            
+            setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_SAVED, UIConstants.SUCCESS_COLOR); // Visual feedback
         } catch (Exception e) {
             System.err.println("Error saving game state: " + e.getMessage());
             e.printStackTrace();
-            
-            // Error feedback
-            setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_ERROR, UIConstants.ERROR_COLOR);
+            setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_ERROR, UIConstants.ERROR_COLOR); // Error feedback
         }
-        
+
         resetButtonAfterDelay(saveButton, UIConstants.BTN_SAVE);
     }
-    
+
     /**
      * Loads the most recent saved game state from the database
      */
@@ -256,53 +261,31 @@ public class GamePanel extends JPanel {
                 resetButtonAfterDelay(loadButton, UIConstants.BTN_LOAD);
                 return;
             }
-            
+
             // Get the last match (most recent)
             UUID lastMatchId = matches.get(matches.size() - 1).getId();
             LoadedGameState state = gameStateService.loadGameState(lastMatchId);
-            
+
             // Apply loaded state
             applyLoadedState(state);
-            
+
             // Visual feedback
             setButtonFeedback(loadButton, UIConstants.BTN_FEEDBACK_OK, UIConstants.BUTTON_HOVER_BLUE);
-            
+
             // Repaint to show changes
             repaint();
-            
+
         } catch (Exception e) {
             System.err.println("Error loading game state: " + e.getMessage());
             e.printStackTrace();
-            
+
             // Error feedback
             setButtonFeedback(loadButton, UIConstants.BTN_FEEDBACK_ERROR, UIConstants.ERROR_COLOR);
         }
-        
+
         resetButtonAfterDelay(loadButton, UIConstants.BTN_LOAD);
     }
-    
-    /**
-     * Public method to load game state from menu
-     * Since game loop now runs on EDT via Timer, this is already thread-safe
-     */
-    public void loadGameStateFromMenu(UUID matchId) {
-        // If game is not yet initialized, store the matchId to load after initialization
-        if (leftPaddle == null || rightPaddle == null || ball == null) {
-            this.pendingMatchIdToLoad = matchId;
-            return;
-        }
-        
-        // Game is already initialized, load immediately
-        try {
-            LoadedGameState state = gameStateService.loadGameState(matchId);
-            applyLoadedState(state);
-            repaint();
-        } catch (Exception e) {
-            System.err.println("Error loading game state: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-    
+
     /**
      * Applies a loaded game state to the current game components
      */
@@ -312,18 +295,18 @@ public class GamePanel extends JPanel {
         leftPaddle.setY(state.getLeftPaddle().getY());
         rightPaddle.setX(state.getRightPaddle().getX());
         rightPaddle.setY(state.getRightPaddle().getY());
-        
+
         // Restore ball position and velocity
         ball.setX(state.getBall().getX());
         ball.setY(state.getBall().getY());
         ball.setVelocityX(state.getBall().getVelocityX());
         ball.setVelocityY(state.getBall().getVelocityY());
-        
+
         // Restore scores
         scoreManager.setLeftScore(state.getScoreManager().getLeftScore());
         scoreManager.setRightScore(state.getScoreManager().getRightScore());
     }
-    
+
     /**
      * Resets button appearance after a delay using Swing Timer (thread-safe)
      */
@@ -335,7 +318,7 @@ public class GamePanel extends JPanel {
         timer.setRepeats(false); // Execute only once
         timer.start();
     }
-    
+
     /**
      * Sets button visual feedback (text and color)
      */
@@ -402,7 +385,7 @@ public class GamePanel extends JPanel {
         if (currentState == GameState.GAME_OVER) {
             drawGameOver(g);
         }
-        
+
         // Draw paused overlay
         if (currentState == GameState.PAUSED) {
             drawPausedOverlay(g);
@@ -411,35 +394,36 @@ public class GamePanel extends JPanel {
         // Sync for smooth rendering
         Toolkit.getDefaultToolkit().sync();
     }
-    
+
     /**
      * Draws the game over screen
      */
     private void drawGameOver(Graphics g) {
         int screenWidth = getWidth();
         int screenHeight = getHeight();
-        
+
         if (screenWidth <= 0 || screenHeight <= 0) {
             return;
         }
 
-    // Semi-transparent overlay
-    g.setColor(UIConstants.OVERLAY_DARK);
+        // Semi-transparent overlay
+        g.setColor(UIConstants.OVERLAY_DARK);
         g.fillRect(0, 0, screenWidth, screenHeight);
 
         // Winner text
         g.setColor(Color.WHITE);
-    g.setFont(new Font("Arial", Font.BOLD, (int) UIConstants.LARGE_TEXT_SIZE));
+        g.setFont(new Font("Arial", Font.BOLD, (int) UIConstants.LARGE_TEXT_SIZE));
 
         String winnerText = "Player " + scoreManager.getWinner() + " Wins!";
         int textWidth = g.getFontMetrics().stringWidth(winnerText);
         g.drawString(winnerText, screenWidth / 2 - textWidth / 2, screenHeight / 2);
 
         // Instructions
-    g.setFont(new Font("Arial", Font.PLAIN, (int) UIConstants.MEDIUM_TEXT_SIZE));
+        g.setFont(new Font("Arial", Font.PLAIN, (int) UIConstants.MEDIUM_TEXT_SIZE));
         String instructions = "Press ESC to exit";
         textWidth = g.getFontMetrics().stringWidth(instructions);
-    g.drawString(instructions, screenWidth / 2 - textWidth / 2, screenHeight / 2 + UIConstants.GAME_OVER_INSTRUCTION_OFFSET);
+        g.drawString(instructions, screenWidth / 2 - textWidth / 2,
+                screenHeight / 2 + UIConstants.GAME_OVER_INSTRUCTION_OFFSET);
     }
 
     /**
@@ -449,10 +433,10 @@ public class GamePanel extends JPanel {
         // Semi-transparent overlay
         g.setColor(UIConstants.OVERLAY_COLOR);
         g.fillRect(0, 0, getWidth(), getHeight());
-        
+
         // "PAUSED" text
         g.setFont(FontUtils.getDefaultFont(Font.BOLD, UIConstants.PAUSED_TEXT_SIZE));
-        
+
         g.setColor(UIConstants.TEXT_COLOR);
         String text = "PAUSED";
         int textWidth = g.getFontMetrics().stringWidth(text);

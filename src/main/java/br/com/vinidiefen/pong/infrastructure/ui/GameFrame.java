@@ -11,6 +11,7 @@ public class GameFrame extends JFrame {
     
     private MenuPanel menuPanel;
     private GamePanel gamePanel;
+    private UUID matchId;
 
     public GameFrame() {
         super("Pong Game");
@@ -20,7 +21,7 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // For better performance
-        setResizable(true);
+        setResizable(false);
 
         // Focus settings for keyboard input
         setFocusable(true);
@@ -36,6 +37,7 @@ public class GameFrame extends JFrame {
             remove(gamePanel);
             gamePanel.stop();
             gamePanel = null;
+            matchId = null;
         }
         
         // Cria e adiciona menu panel
@@ -59,7 +61,11 @@ public class GameFrame extends JFrame {
         }
         
         // Cria e adiciona game panel
-        gamePanel = new GamePanel();
+        if (matchId != null) {
+            gamePanel = new GamePanel(matchId);
+        } else {
+            gamePanel = new GamePanel();
+        }
         add(gamePanel);
         
         // Atualiza display
@@ -68,26 +74,8 @@ public class GameFrame extends JFrame {
         gamePanel.requestFocusInWindow();
     }
     
-    /**
-     * Carrega um jogo salvo
-     */
-    public void loadGame(UUID matchId) {
-        // Remove menu panel
-        if (menuPanel != null) {
-            remove(menuPanel);
-            menuPanel = null;
-        }
-        
-        // Cria game panel e carrega o estado salvo
-        gamePanel = new GamePanel();
-        add(gamePanel);
-        
-        // Atualiza display
-        revalidate();
-        repaint();
-        gamePanel.requestFocusInWindow();
-        
-        // Carrega o jogo após a inicialização
-        gamePanel.loadGameStateFromMenu(matchId);
+    public void setMatchId(UUID matchId) {
+        this.matchId = matchId;
     }
+
 }
