@@ -25,10 +25,6 @@ public class GameLoop extends Thread {
         long lastTime = System.nanoTime();
         double delta = 0;
 
-        // For FPS/UPS calculations
-        long timer = System.currentTimeMillis();
-        int frames = 0;
-
         while (gamePanel.isGameLoopActive()) {
             long now = System.nanoTime();
             delta += (now - lastTime) / NS_PER_UPDATE;
@@ -44,14 +40,6 @@ public class GameLoop extends Thread {
 
             // Render
             gamePanel.repaint();
-            frames++;
-
-            // FPS tracking (optional)
-            if (System.currentTimeMillis() - timer > 1000) {
-                timer += 1000;
-                System.out.println("FPS: " + frames);
-                frames = 0;
-            }
 
             // Small sleep to prevent CPU overload
             try {
