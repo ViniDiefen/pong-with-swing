@@ -7,7 +7,7 @@ import java.util.Optional;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import br.com.vinidiefen.pong.ui.GameFrame;
+import br.com.vinidiefen.pong.infrastructure.ui.GameFrame;
 
 /**
  * Main entry point for Pong game

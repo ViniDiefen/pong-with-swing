@@ -22,7 +22,13 @@ public final class GameConstants {
     // Ball settings
     public static final int BALL_SIZE = 20;
     public static final int BALL_INITIAL_SPEED = 4;
+    public static final int BALL_SPEED_INCREMENT = 1;
+    
+    // Shortcuts are centralized in InputConstants
     
     // Field settings
     public static final int FIELD_LINE_WIDTH = 3;
+    
+    // Engine behavior
+    public static final int GAME_LOOP_SLEEP_MS = 1;
 }

@@ -44,4 +44,13 @@ public final class UIConstants {
     // Delays
     public static final int BUTTON_RESET_DELAY_MS = 2000;
     public static final int BUTTON_FEEDBACK_DELAY = 2000; // milliseconds
+    
+    // Score rendering positions
+    public static final int SCORE_TEXT_Y = 60;
+
+    // Game over UI
+    public static final int GAME_OVER_INSTRUCTION_OFFSET = 60;
+
+    // Field line dashing pattern
+    public static final float[] FIELD_LINE_DASH_PATTERN = { 10f, 10f };
 }
