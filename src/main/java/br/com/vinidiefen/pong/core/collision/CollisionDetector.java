@@ -49,25 +49,21 @@ public class CollisionDetector {
      *
      * @return true if collision detected
      */
-    public boolean checkCollision() {
-        boolean collisionDetected = false;
-
+    public void checkCollision() {
         for (Map.Entry<CollisionObserver, List<GameObject>> entry : collisionMap.entrySet()) {
             CollisionObserver observer = entry.getKey();
             for (GameObject obj2 : entry.getValue()) {
                 if (checkCollision(observer, obj2)) {
                     observer.onCollision(obj2);
-                    collisionDetected = true;
                 }
             }
         }
-        return collisionDetected;
     }
 
     /**
      * Check if a CollisionObserver collides with a GameObject
      */
-    public boolean checkCollision(CollisionObserver observer, GameObject gameObject2) {
+    private boolean checkCollision(CollisionObserver observer, GameObject gameObject2) {
         if (!(observer instanceof GameObject) || gameObject2 == null) {
             return false;
         }
@@ -76,13 +72,6 @@ public class CollisionDetector {
         Rectangle gameObject2Bounds = gameObject2.getBounds();
 
         return gameObject1Bounds.intersects(gameObject2Bounds);
-    }
-
-    /**
-     * Removes every registered observer/collidable pair.
-     */
-    public void clear() {
-        collisionMap.clear();
     }
 
 }

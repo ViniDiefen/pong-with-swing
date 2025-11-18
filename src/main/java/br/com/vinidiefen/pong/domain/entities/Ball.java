@@ -13,9 +13,6 @@ import br.com.vinidiefen.pong.core.collision.CollisionObserver;
  */
 public class Ball extends GameObject implements CollisionObserver {
 
-    // Constants moved to GameConstants
-    private static final int SPEED_INCREMENT = GameConstants.BALL_SPEED_INCREMENT;
-
     private int velocityX;
     private int velocityY;
     private int initialX;
@@ -81,8 +78,9 @@ public class Ball extends GameObject implements CollisionObserver {
      * Increase ball speed slightly
      */
     public void increaseSpeed() {
-        velocityX += Integer.signum(velocityX) * SPEED_INCREMENT;
-        velocityY += Integer.signum(velocityY) * SPEED_INCREMENT;
+        // Signum uses the sign of the velocity (+1, 0 or -1) to increase speed
+        velocityX += Integer.signum(velocityX) * GameConstants.BALL_SPEED_INCREMENT;
+        velocityY += Integer.signum(velocityY) * GameConstants.BALL_SPEED_INCREMENT;
     }
 
     public int getVelocityX() {

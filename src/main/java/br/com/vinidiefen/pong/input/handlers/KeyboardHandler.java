@@ -29,10 +29,6 @@ public class KeyboardHandler extends KeyAdapter {
         inputObservers.remove(observer);
     }
 
-    public void clearObservers() {
-        inputObservers.clear();
-    }
-
     @Override
     public void keyPressed(KeyEvent e) {
         notifyObservers(e);
