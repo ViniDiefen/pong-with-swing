@@ -49,6 +49,9 @@ public class GamePanel extends JPanel {
     private br.com.vinidiefen.pong.core.engine.GameLoop gameLoopThread;
     private volatile GameState currentState = GameState.STOPPED;
     
+    // Match ID to load after initialization
+    private UUID pendingMatchIdToLoad = null;
+    
     // UI Components
     private JButton pauseButton;
     private JButton saveButton;
@@ -143,6 +146,19 @@ public class GamePanel extends JPanel {
         // Start game loop with Thread-based implementation
         currentState = GameState.PLAYING;
         gameLoopThread.start();
+        
+        // If there's a pending match to load, load it now
+        if (pendingMatchIdToLoad != null) {
+            try {
+                LoadedGameState state = gameStateService.loadGameState(pendingMatchIdToLoad);
+                applyLoadedState(state);
+                pendingMatchIdToLoad = null; // Clear the pending load
+                repaint();
+            } catch (Exception e) {
+                System.err.println("Error loading pending game state: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
     
     /**
@@ -270,6 +286,13 @@ public class GamePanel extends JPanel {
      * Since game loop now runs on EDT via Timer, this is already thread-safe
      */
     public void loadGameStateFromMenu(UUID matchId) {
+        // If game is not yet initialized, store the matchId to load after initialization
+        if (leftPaddle == null || rightPaddle == null || ball == null) {
+            this.pendingMatchIdToLoad = matchId;
+            return;
+        }
+        
+        // Game is already initialized, load immediately
         try {
             LoadedGameState state = gameStateService.loadGameState(matchId);
             applyLoadedState(state);
