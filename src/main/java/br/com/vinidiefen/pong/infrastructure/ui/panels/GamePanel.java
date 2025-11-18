@@ -245,8 +245,6 @@ public class GamePanel extends JPanel {
             e.printStackTrace();
             setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_ERROR, UIConstants.ERROR_COLOR); // Error feedback
         }
-
-        resetButtonAfterDelay(saveButton, UIConstants.BTN_SAVE);
     }
 
     /**
@@ -258,7 +256,6 @@ public class GamePanel extends JPanel {
             if (matches.isEmpty()) {
                 System.out.println("No saved games found!");
                 setButtonFeedback(loadButton, UIConstants.BTN_FEEDBACK_EMPTY, UIConstants.WARNING_COLOR);
-                resetButtonAfterDelay(loadButton, UIConstants.BTN_LOAD);
                 return;
             }
 
@@ -277,13 +274,10 @@ public class GamePanel extends JPanel {
 
         } catch (Exception e) {
             System.err.println("Error loading game state: " + e.getMessage());
-            e.printStackTrace();
 
             // Error feedback
             setButtonFeedback(loadButton, UIConstants.BTN_FEEDBACK_ERROR, UIConstants.ERROR_COLOR);
         }
-
-        resetButtonAfterDelay(loadButton, UIConstants.BTN_LOAD);
     }
 
     /**
@@ -308,6 +302,16 @@ public class GamePanel extends JPanel {
     }
 
     /**
+     * Sets button visual feedback (text and color)
+     */
+    private void setButtonFeedback(JButton button, String text, Color color) {
+        String previouString = button.getText();
+        button.setText(text);
+        button.setForeground(color);
+        resetButtonAfterDelay(button, previouString);
+    }
+
+    /**
      * Resets button appearance after a delay using Swing Timer (thread-safe)
      */
     private void resetButtonAfterDelay(JButton button, String originalText) {
@@ -317,14 +321,6 @@ public class GamePanel extends JPanel {
         });
         timer.setRepeats(false); // Execute only once
         timer.start();
-    }
-
-    /**
-     * Sets button visual feedback (text and color)
-     */
-    private void setButtonFeedback(JButton button, String text, Color color) {
-        button.setText(text);
-        button.setForeground(color);
     }
 
     /**
