@@ -8,7 +8,6 @@ import java.awt.Color;
 public final class UIConstants {
     
     private UIConstants() {
-        throw new AssertionError("Cannot instantiate constants class");
     }
     
     // Colors

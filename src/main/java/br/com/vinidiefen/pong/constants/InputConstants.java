@@ -8,7 +8,6 @@ import java.awt.event.KeyEvent;
 public final class InputConstants {
 
     private InputConstants() {
-        throw new AssertionError("Cannot instantiate constants class");
     }
 
     // Global
