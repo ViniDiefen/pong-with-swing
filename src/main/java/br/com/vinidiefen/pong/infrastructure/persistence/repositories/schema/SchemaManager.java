@@ -30,7 +30,7 @@ public class SchemaManager {
      * Creates a SchemaManager for the default model package.
      */
     public SchemaManager() {
-        this("br.com.vinidiefen.pong.models");
+        this("br.com.vinidiefen.pong.infrastructure.persistence.models");
     }
 
     /**

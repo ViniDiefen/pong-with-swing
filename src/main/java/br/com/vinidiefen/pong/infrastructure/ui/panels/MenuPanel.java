@@ -2,7 +2,6 @@ package br.com.vinidiefen.pong.infrastructure.ui.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -13,12 +12,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 
 import br.com.vinidiefen.pong.constants.UIConstants;
 import br.com.vinidiefen.pong.application.services.GameStateService;
 import br.com.vinidiefen.pong.infrastructure.ui.GameFrame;
 import br.com.vinidiefen.pong.infrastructure.ui.factories.ButtonFactory;
+import br.com.vinidiefen.pong.infrastructure.ui.utils.FontUtils;
 
 /**
  * Menu Panel - Initial game screen
@@ -49,14 +48,7 @@ public class MenuPanel extends JPanel {
         JLabel titleLabel = new JLabel("PONG");
         titleLabel.setForeground(UIConstants.TEXT_COLOR);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        // Get font from UIManager and increase size for title
-        Font baseFont = (Font) UIManager.get("Label.font");
-        if (baseFont != null) {
-            titleLabel.setFont(baseFont.deriveFont(UIConstants.TITLE_FONT_SIZE));
-        } else {
-            titleLabel.setFont(new Font("Arial", Font.BOLD, (int) UIConstants.TITLE_FONT_SIZE));
-        }
+        titleLabel.setFont(FontUtils.getDefaultFont(UIConstants.TITLE_FONT_SIZE));
         
         titlePanel.add(titleLabel);
         
@@ -69,19 +61,19 @@ public class MenuPanel extends JPanel {
         gbc.insets = new Insets(10, 0, 10, 0);
         
         // Play button
-        JButton playButton = ButtonFactory.createMenuButton("JOGAR");
+        JButton playButton = ButtonFactory.createMenuButton(UIConstants.BTN_JOGAR);
         playButton.addActionListener(e -> startGame());
         gbc.gridy = 0;
         buttonPanel.add(playButton, gbc);
         
         // Load game button
-        JButton loadButton = ButtonFactory.createMenuButton("CARREGAR");
+        JButton loadButton = ButtonFactory.createMenuButton(UIConstants.BTN_CARREGAR);
         loadButton.addActionListener(e -> loadGame());
         gbc.gridy = 1;
         buttonPanel.add(loadButton, gbc);
         
         // Exit button
-        JButton exitButton = ButtonFactory.createMenuButton("SAIR");
+        JButton exitButton = ButtonFactory.createMenuButton(UIConstants.BTN_SAIR);
         exitButton.addActionListener(e -> exitGame());
         gbc.gridy = 2;
         buttonPanel.add(exitButton, gbc);

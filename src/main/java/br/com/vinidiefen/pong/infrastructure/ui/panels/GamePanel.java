@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 
 import br.com.vinidiefen.pong.application.services.GameStateService;
 import br.com.vinidiefen.pong.application.services.GameStateService.LoadedGameState;
@@ -24,6 +23,7 @@ import br.com.vinidiefen.pong.domain.entities.FieldLine;
 import br.com.vinidiefen.pong.domain.entities.Paddle;
 import br.com.vinidiefen.pong.domain.managers.ScoreManager;
 import br.com.vinidiefen.pong.infrastructure.ui.factories.ButtonFactory;
+import br.com.vinidiefen.pong.infrastructure.ui.utils.FontUtils;
 import br.com.vinidiefen.pong.input.handlers.GameShortcuts;
 import br.com.vinidiefen.pong.input.handlers.KeyboardHandler;
 
@@ -194,12 +194,12 @@ public class GamePanel extends JPanel {
     private void togglePause() {
         if (currentState == GameState.PLAYING) {
             currentState = GameState.PAUSED;
-            pauseButton.setText("PLAY");
+            pauseButton.setText(UIConstants.BTN_PLAY);
             saveButton.setVisible(true); // Show save button when paused
             loadButton.setVisible(true); // Show load button when paused
         } else if (currentState == GameState.PAUSED) {
             currentState = GameState.PLAYING;
-            pauseButton.setText("PAUSE");
+            pauseButton.setText(UIConstants.BTN_PAUSE);
             saveButton.setVisible(false); // Hide save button when playing
             loadButton.setVisible(false); // Hide load button when playing
         }
@@ -215,19 +215,17 @@ public class GamePanel extends JPanel {
             gameStateService.saveGameState(leftPaddle, rightPaddle, ball, scoreManager);
             
             // Visual feedback
-            saveButton.setText("SAVED!");
-            saveButton.setForeground(UIConstants.SUCCESS_COLOR);
+            setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_SAVED, UIConstants.SUCCESS_COLOR);
             
         } catch (Exception e) {
             System.err.println("Error saving game state: " + e.getMessage());
             e.printStackTrace();
             
             // Error feedback
-            saveButton.setText("ERROR!");
-            saveButton.setForeground(UIConstants.ERROR_COLOR);
+            setButtonFeedback(saveButton, UIConstants.BTN_FEEDBACK_ERROR, UIConstants.ERROR_COLOR);
         }
         
-        resetButtonAfterDelay(saveButton, "SAVE");
+        resetButtonAfterDelay(saveButton, UIConstants.BTN_SAVE);
     }
     
     /**
@@ -238,9 +236,8 @@ public class GamePanel extends JPanel {
             var matches = gameStateService.getAllMatches();
             if (matches.isEmpty()) {
                 System.out.println("No saved games found!");
-                loadButton.setText("EMPTY!");
-                loadButton.setForeground(UIConstants.WARNING_COLOR);
-                resetButtonAfterDelay(loadButton, "LOAD");
+                setButtonFeedback(loadButton, UIConstants.BTN_FEEDBACK_EMPTY, UIConstants.WARNING_COLOR);
+                resetButtonAfterDelay(loadButton, UIConstants.BTN_LOAD);
                 return;
             }
             
@@ -252,8 +249,7 @@ public class GamePanel extends JPanel {
             applyLoadedState(state);
             
             // Visual feedback
-            loadButton.setText("OK!");
-            loadButton.setForeground(UIConstants.BUTTON_HOVER_BLUE);
+            setButtonFeedback(loadButton, UIConstants.BTN_FEEDBACK_OK, UIConstants.BUTTON_HOVER_BLUE);
             
             // Repaint to show changes
             repaint();
@@ -263,11 +259,10 @@ public class GamePanel extends JPanel {
             e.printStackTrace();
             
             // Error feedback
-            loadButton.setText("ERROR!");
-            loadButton.setForeground(UIConstants.ERROR_COLOR);
+            setButtonFeedback(loadButton, UIConstants.BTN_FEEDBACK_ERROR, UIConstants.ERROR_COLOR);
         }
         
-        resetButtonAfterDelay(loadButton, "LOAD");
+        resetButtonAfterDelay(loadButton, UIConstants.BTN_LOAD);
     }
     
     /**
@@ -316,6 +311,14 @@ public class GamePanel extends JPanel {
         });
         timer.setRepeats(false); // Execute only once
         timer.start();
+    }
+    
+    /**
+     * Sets button visual feedback (text and color)
+     */
+    private void setButtonFeedback(JButton button, String text, Color color) {
+        button.setText(text);
+        button.setForeground(color);
     }
 
     /**
@@ -425,12 +428,7 @@ public class GamePanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
         
         // "PAUSED" text
-        Font font = (Font) UIManager.get("Label.font");
-        if (font != null) {
-            g.setFont(font.deriveFont(UIConstants.PAUSED_TEXT_SIZE));
-        } else {
-            g.setFont(new Font("Arial", Font.BOLD, (int) UIConstants.PAUSED_TEXT_SIZE));
-        }
+        g.setFont(FontUtils.getDefaultFont(Font.BOLD, UIConstants.PAUSED_TEXT_SIZE));
         
         g.setColor(UIConstants.TEXT_COLOR);
         String text = "PAUSED";

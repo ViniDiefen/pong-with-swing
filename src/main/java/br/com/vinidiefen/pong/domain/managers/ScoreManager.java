@@ -5,8 +5,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Optional;
 
-import javax.swing.UIManager;
 import br.com.vinidiefen.pong.constants.UIConstants;
+import br.com.vinidiefen.pong.infrastructure.ui.utils.FontUtils;
 
 /**
  * Manages game scores and win condition
@@ -121,11 +121,7 @@ public class ScoreManager {
     }
 
     private Font resolveScoreFont() {
-        Font labelFont = UIManager.getFont("Label.font");
-        if (labelFont != null) {
-            return labelFont.deriveFont(Font.PLAIN, UIConstants.SCORE_FONT_SIZE);
-        }
-        return new Font("Arial", Font.PLAIN, (int) UIConstants.SCORE_FONT_SIZE);
+        return FontUtils.getDefaultFont(Font.PLAIN, UIConstants.SCORE_FONT_SIZE);
     }
 
 }

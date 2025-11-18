@@ -53,4 +53,19 @@ public final class UIConstants {
 
     // Field line dashing pattern
     public static final float[] FIELD_LINE_DASH_PATTERN = { 10f, 10f };
+    
+    // Button text constants
+    public static final String BTN_PAUSE = "PAUSE";
+    public static final String BTN_PLAY = "PLAY";
+    public static final String BTN_SAVE = "SAVE";
+    public static final String BTN_LOAD = "LOAD";
+    public static final String BTN_JOGAR = "JOGAR";
+    public static final String BTN_CARREGAR = "CARREGAR";
+    public static final String BTN_SAIR = "SAIR";
+    
+    // Button feedback messages
+    public static final String BTN_FEEDBACK_SAVED = "SAVED!";
+    public static final String BTN_FEEDBACK_OK = "OK!";
+    public static final String BTN_FEEDBACK_ERROR = "ERROR!";
+    public static final String BTN_FEEDBACK_EMPTY = "EMPTY!";
 }

@@ -7,10 +7,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
-import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 
 import br.com.vinidiefen.pong.constants.UIConstants;
+import br.com.vinidiefen.pong.infrastructure.ui.utils.FontUtils;
 
 /**
  * Factory class for creating styled buttons consistently across the UI
@@ -25,21 +25,21 @@ public class ButtonFactory {
      * Creates a pause button
      */
     public static JButton createPauseButton() {
-        return createGameButton("PAUSE", UIConstants.BUTTON_HOVER_COLOR);
+        return createGameButton(UIConstants.BTN_PAUSE, UIConstants.BUTTON_HOVER_COLOR);
     }
     
     /**
      * Creates a save button
      */
     public static JButton createSaveButton() {
-        return createGameButton("SAVE", UIConstants.BUTTON_HOVER_COLOR);
+        return createGameButton(UIConstants.BTN_SAVE, UIConstants.BUTTON_HOVER_COLOR);
     }
     
     /**
      * Creates a load button
      */
     public static JButton createLoadButton() {
-        return createGameButton("LOAD", UIConstants.BUTTON_HOVER_BLUE);
+        return createGameButton(UIConstants.BTN_LOAD, UIConstants.BUTTON_HOVER_BLUE);
     }
     
     /**
@@ -68,11 +68,11 @@ public class ButtonFactory {
     private static JButton createButton(String text, Dimension size, Float fontSize, Color hoverColor) {
         JButton button = new JButton(text);
         
-        // Set font
-        Font buttonFont = (Font) UIManager.get("Label.font");
-        if (buttonFont != null) {
-            button.setFont(fontSize != null ? buttonFont.deriveFont(fontSize) : buttonFont);
-        }
+        // Set font using FontUtils
+        Font buttonFont = fontSize != null 
+            ? FontUtils.getDefaultFont(fontSize)
+            : FontUtils.getDefaultFont();
+        button.setFont(buttonFont);
         
         // Button style
         button.setPreferredSize(size);
