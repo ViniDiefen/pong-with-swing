@@ -1,8 +1,9 @@
 package br.com.vinidiefen.pong.components;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
-
-import br.com.vinidiefen.pong.renderers.FieldLineRenderer;
+import java.awt.Graphics2D;
 
 public class FieldLine extends GameObject {
 
@@ -21,7 +22,12 @@ public class FieldLine extends GameObject {
 
     @Override
     public void render(Graphics g) {
-        FieldLineRenderer.render(g, this);
+        int middleScreenX = getParent().getWidth() / 2;
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(Color.WHITE);
+        g2d.setStroke(new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, dashPattern, 0f));
+        g2d.drawLine(middleScreenX, 0, middleScreenX, getParent().getHeight());
     }
 
     public float[] getDashPattern() {

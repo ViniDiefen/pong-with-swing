@@ -1,4 +1,4 @@
-package br.com.vinidiefen.pong.physics;
+package br.com.vinidiefen.pong.components;
 
 import java.awt.Rectangle;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public class CollisionDetector {
             List<GameObject> collidableObjects = collisionMap.get(observer);
             for (GameObject obj2 : collidableObjects) {
                 if (checkCollision(observer, obj2)) {
-                    observer.onCollisionChanged(new CollisionEvent(obj2));
+                    observer.onCollision(obj2);
                 }
             }
         }

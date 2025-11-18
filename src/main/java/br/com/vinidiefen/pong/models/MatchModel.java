@@ -7,8 +7,11 @@ import br.com.vinidiefen.pong.repositories.annotations.ForeignKey;
 import br.com.vinidiefen.pong.repositories.annotations.Table;
 
 @Table(name = "matches")
-public class MatchModel extends UUIDObjectModel {
+public class MatchModel {
 
+    @Column(name = "id", type = "UUID", primaryKey = true)
+    private UUID id;
+    
     @ForeignKey(table = "paddles", column = "id")
     @Column(name = "left_paddle_id", type = "UUID", notNull = true)
     private UUID leftPaddleId;
@@ -26,10 +29,11 @@ public class MatchModel extends UUIDObjectModel {
     private UUID scoreManagerId;
 
     public MatchModel() {
+        // Empty constructor for ORM
     }
 
     public MatchModel(UUID leftPaddleId, UUID rightPaddleId, UUID ballId, UUID scoreManagerId) {
-        super();
+        this.id = UUID.randomUUID();
         this.leftPaddleId = leftPaddleId;
         this.rightPaddleId = rightPaddleId;
         this.ballId = ballId;
@@ -39,6 +43,14 @@ public class MatchModel extends UUIDObjectModel {
     // Convenience constructor that accepts Model objects and extracts their IDs
     public MatchModel(PaddleModel leftPaddle, PaddleModel rightPaddle, BallModel ball, ScoreManagerModel scoreManager) {
         this(leftPaddle.getId(), rightPaddle.getId(), ball.getId(), scoreManager.getId());
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public UUID getLeftPaddleId() {

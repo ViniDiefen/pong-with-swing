@@ -1,11 +1,13 @@
-package br.com.vinidiefen.pong;
+package br.com.vinidiefen.pong.components;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
-import br.com.vinidiefen.pong.renderers.ScoreRenderer;
+import javax.swing.UIManager;
 
 /**
- * Manages player scores
+ * Manages game scores and win condition
  */
 public class ScoreManager {
 
@@ -70,7 +72,18 @@ public class ScoreManager {
      * Render scores on screen
      */
     public void render(Graphics g, int screenWidth, int screenHeight) {
-        ScoreRenderer.render(g, leftScore, rightScore, screenWidth, screenHeight);
+        g.setColor(Color.WHITE);
+        g.setFont(UIManager.getFont("Label.font").deriveFont(Font.PLAIN, 48f));
+
+        // Draw left score
+        String leftScoreStr = String.valueOf(leftScore);
+        int leftX = screenWidth / 4;
+        g.drawString(leftScoreStr, leftX, 60);
+
+        // Draw right score
+        String rightScoreStr = String.valueOf(rightScore);
+        int rightX = 3 * screenWidth / 4;
+        g.drawString(rightScoreStr, rightX, 60);
     }
 
 }

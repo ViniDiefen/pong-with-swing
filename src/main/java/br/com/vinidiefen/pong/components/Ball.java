@@ -1,11 +1,9 @@
 package br.com.vinidiefen.pong.components;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 import br.com.vinidiefen.pong.models.BallModel;
-import br.com.vinidiefen.pong.physics.CollisionEvent;
-import br.com.vinidiefen.pong.physics.CollisionObserver;
-import br.com.vinidiefen.pong.renderers.BallRenderer;
 
 /**
  * Ball entity that bounces around the screen
@@ -44,7 +42,8 @@ public class Ball extends GameObject implements CollisionObserver {
 
     @Override
     public void render(Graphics g) {
-        BallRenderer.render(g, this);
+        g.setColor(Color.WHITE);
+        g.fillRect(x, y, width, height);
     }
 
     /**
@@ -105,10 +104,9 @@ public class Ball extends GameObject implements CollisionObserver {
     }
 
     @Override
-    public void onCollisionChanged(CollisionEvent event) {
+    public void onCollision(GameObject other) {
         reverseX();
 
-        GameObject other = (GameObject) event.getSource();
         // Adjust ball position to prevent getting stuck
         if (getVelocityX() > 0) {
             setX(other.getX() + other.getWidth());

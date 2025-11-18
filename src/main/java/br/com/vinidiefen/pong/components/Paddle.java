@@ -1,11 +1,11 @@
 package br.com.vinidiefen.pong.components;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
 import br.com.vinidiefen.pong.input.InputObserver;
 import br.com.vinidiefen.pong.models.PaddleModel;
-import br.com.vinidiefen.pong.renderers.PaddleRenderer;
 
 /**
  * Paddle entity controlled by player (Observer in Observer pattern)
@@ -89,7 +89,8 @@ public class Paddle extends GameObject implements InputObserver {
 
     @Override
     public void render(Graphics g) {
-        PaddleRenderer.render(g, this);
+        g.setColor(Color.WHITE);
+        g.fillRect(x, y, width, height);
     }
 
     /**

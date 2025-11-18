@@ -1,7 +1,7 @@
-package br.com.vinidiefen.pong;
+package br.com.vinidiefen.pong.constants;
 
 /**
- * Represents the current state of the game
+ * Represents the different states of the game
  */
 public enum GameState {
     MENU(true),

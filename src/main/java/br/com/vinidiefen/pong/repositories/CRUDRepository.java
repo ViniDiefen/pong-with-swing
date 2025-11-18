@@ -32,9 +32,6 @@ public class CRUDRepository<T> {
 
     public void create(T obj) {
         String sql = DMLGenerator.generateInsert(metadata);
-        System.out.println("INSERT SQL:");
-        System.out.println(sql);
-        System.out.println();
 
         try (var conn = PostgresConnection.getInstance().getConnection();
              var stmt = conn.prepareStatement(sql)) {
@@ -43,7 +40,6 @@ public class CRUDRepository<T> {
             setParameters(stmt, obj, metadata.getFieldMetadataList());
             
             stmt.executeUpdate();
-            System.out.println("Entity created successfully!");
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create entity", e);
         }
@@ -51,9 +47,6 @@ public class CRUDRepository<T> {
 
     public T read(Object id) {
         String sql = DMLGenerator.generateSelectById(metadata);
-        System.out.println("SELECT SQL:");
-        System.out.println(sql);
-        System.out.println();
 
         try (var conn = PostgresConnection.getInstance().getConnection();
              var stmt = conn.prepareStatement(sql)) {

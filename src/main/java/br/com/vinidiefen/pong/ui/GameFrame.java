@@ -1,4 +1,4 @@
-package br.com.vinidiefen.pong;
+package br.com.vinidiefen.pong.ui;
 
 import java.util.UUID;
 
