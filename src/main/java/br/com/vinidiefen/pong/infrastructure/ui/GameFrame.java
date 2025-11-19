@@ -29,10 +29,10 @@ public class GameFrame extends JFrame {
     }
     
     /**
-     * Mostra o menu inicial
+     * Shows the main menu
      */
     public void showMenu() {
-        // Remove game panel se existir
+        // Remove game panel if exists
         if (gamePanel != null) {
             remove(gamePanel);
             gamePanel.stop();
@@ -40,18 +40,18 @@ public class GameFrame extends JFrame {
             matchId = null;
         }
         
-        // Cria e adiciona menu panel
+        // Create and add menu panel
         menuPanel = new MenuPanel(this);
         add(menuPanel);
         
-        // Atualiza display
+        // Update display
         revalidate();
         repaint();
         menuPanel.requestFocusInWindow();
     }
     
     /**
-     * Inicia o jogo (chamado pelo menu)
+     * Starts the game (called by menu)
      */
     public void startGame() {
         // Remove menu panel
@@ -60,7 +60,7 @@ public class GameFrame extends JFrame {
             menuPanel = null;
         }
         
-        // Cria e adiciona game panel
+        // Create and add game panel
         if (matchId != null) {
             gamePanel = new GamePanel(matchId);
         } else {
@@ -68,7 +68,7 @@ public class GameFrame extends JFrame {
         }
         add(gamePanel);
         
-        // Atualiza display
+        // Update display
         revalidate();
         repaint();
         gamePanel.requestFocusInWindow();
