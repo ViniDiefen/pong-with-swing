@@ -17,6 +17,8 @@ import br.com.vinidiefen.pong.constants.UIConstants;
 import br.com.vinidiefen.pong.infrastructure.ui.GameFrame;
 import br.com.vinidiefen.pong.infrastructure.ui.factories.ButtonFactory;
 import br.com.vinidiefen.pong.infrastructure.ui.utils.FontUtils;
+import br.com.vinidiefen.pong.input.handlers.GameShortcuts;
+import br.com.vinidiefen.pong.input.handlers.KeyboardHandler;
 
 /**
  * Menu Panel - Initial game screen
@@ -25,12 +27,23 @@ public class MenuPanel extends JPanel {
 
     private final GameFrame gameFrame;
     private final GameStateService gameStateService;
+    private final KeyboardHandler keyboardHandler;
+    private final GameShortcuts shortcuts;
 
     public MenuPanel(GameFrame gameFrame) {
         this.gameFrame = gameFrame;
         this.gameStateService = new GameStateService();
+        
+        // Setup keyboard handling
+        this.keyboardHandler = new KeyboardHandler();
+        this.shortcuts = new GameShortcuts();
+        keyboardHandler.addInputObserver(shortcuts);
+        
         setBackground(UIConstants.BACKGROUND_COLOR);
         setLayout(new BorderLayout());
+        setFocusable(true);
+        addKeyListener(keyboardHandler);
+        
         setupUI();
     }
 
