@@ -54,7 +54,7 @@ public class ButtonFactory {
     /**
      * Creates a small game button (for pause, save, load in-game)
      */
-    public static JButton createGameButton(String text, Color hoverColor) {
+    private static JButton createGameButton(String text, Color hoverColor) {
         return createButton(text,
                 new Dimension(UIConstants.SMALL_BUTTON_WIDTH, UIConstants.SMALL_BUTTON_HEIGHT),
                 UIConstants.GAME_BUTTON_FONT_SIZE,

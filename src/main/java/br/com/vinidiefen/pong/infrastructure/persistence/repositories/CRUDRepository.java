@@ -65,47 +65,6 @@ public class CRUDRepository<T> {
     }
 
     /**
-     * Updates an existing entity
-     */
-    public void update(T obj) {
-        String sql = DMLGenerator.generateUpdate(metadata);
-        
-        try (var conn = PostgresConnection.getInstance().getConnection();
-             var stmt = conn.prepareStatement(sql)) {
-            
-            // Set parameters (all fields except PK)
-            List<FieldMetadata> nonPkFields = metadata.getFieldMetadataList().stream()
-                    .filter(f -> !f.isPrimaryKey())
-                    .toList();
-            setParameters(stmt, obj, nonPkFields);
-            
-            // Set PK parameter at the end (for WHERE clause)
-            FieldMetadata pkField = metadata.getPrimaryKeyField();
-            stmt.setObject(nonPkFields.size() + 1, pkField.getValue(obj));
-            
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to update entity", e);
-        }
-    }
-
-    /**
-     * Deletes an entity by ID
-     */
-    public void delete(Object id) {
-        String sql = DMLGenerator.generateDelete(metadata);
-        
-        try (var conn = PostgresConnection.getInstance().getConnection();
-             var stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setObject(1, id);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete entity", e);
-        }
-    }
-
-    /**
      * Finds all entities
      */
     public List<T> findAll() {

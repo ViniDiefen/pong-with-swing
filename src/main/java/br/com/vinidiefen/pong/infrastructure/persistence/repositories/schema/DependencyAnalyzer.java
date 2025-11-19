@@ -2,7 +2,6 @@ package br.com.vinidiefen.pong.infrastructure.persistence.repositories.schema;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.logging.Logger;
 
 import br.com.vinidiefen.pong.infrastructure.persistence.repositories.annotations.ForeignKey;
 import br.com.vinidiefen.pong.infrastructure.persistence.repositories.annotations.Table;
@@ -12,8 +11,6 @@ import br.com.vinidiefen.pong.infrastructure.persistence.repositories.annotation
  * and provides topological sorting for correct table creation/deletion order.
  */
 public class DependencyAnalyzer {
-
-    private static final Logger LOGGER = Logger.getLogger(DependencyAnalyzer.class.getName());
 
     /**
      * Sorts entity classes in dependency order (dependencies first).
@@ -77,11 +74,6 @@ public class DependencyAnalyzer {
             }
             
             dependencies.put(entityClass, deps);
-            
-            if (!deps.isEmpty()) {
-                LOGGER.fine("Class " + entityClass.getSimpleName() + 
-                    " depends on tables: " + deps);
-            }
         }
         
         return dependencies;
@@ -150,7 +142,7 @@ public class DependencyAnalyzer {
         
         // Check for circular dependencies
         if (result.size() != entityClasses.size()) {
-            LOGGER.warning("Circular dependency detected! Some tables may not be created in correct order.");
+            System.err.println("WARNING: Circular dependency detected! Some tables may not be created in correct order.");
             // Add remaining classes
             for (Class<?> entityClass : entityClasses) {
                 if (!visited.contains(entityClass)) {

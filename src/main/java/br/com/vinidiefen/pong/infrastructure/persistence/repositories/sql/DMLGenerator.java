@@ -51,35 +51,4 @@ public class DMLGenerator {
         return "SELECT * FROM " + metadata.getTableName();
     }
 
-    /**
-     * Generates UPDATE statement
-     */
-    public static <T> String generateUpdate(EntityMetadata<T> metadata) {
-        FieldMetadata pkField = metadata.getPrimaryKeyField();
-        
-        StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE ")
-           .append(metadata.getTableName())
-           .append(" SET ");
-
-        List<String> setStatements = metadata.getFieldMetadataList().stream()
-                .filter(field -> !field.isPrimaryKey())
-                .map(field -> field.getColumnName() + " = ?")
-                .collect(Collectors.toList());
-
-        sql.append(String.join(", ", setStatements));
-        sql.append(" WHERE ").append(pkField.getColumnName()).append(" = ?");
-
-        return sql.toString();
-    }
-
-    /**
-     * Generates DELETE statement
-     */
-    public static <T> String generateDelete(EntityMetadata<T> metadata) {
-        FieldMetadata pkField = metadata.getPrimaryKeyField();
-        
-        return "DELETE FROM " + metadata.getTableName() + 
-               " WHERE " + pkField.getColumnName() + " = ?";
-    }
 }

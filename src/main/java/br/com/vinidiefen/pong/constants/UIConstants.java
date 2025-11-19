@@ -15,12 +15,10 @@ public final class UIConstants {
     public static final Color TEXT_COLOR = Color.WHITE;
     public static final Color BUTTON_HOVER_COLOR = new Color(100, 200, 100);
     public static final Color BUTTON_HOVER_BLUE = new Color(100, 200, 255);
-    public static final Color BUTTON_HOVER_YELLOW = new Color(200, 200, 100);
     public static final Color SUCCESS_COLOR = new Color(100, 200, 100);
     public static final Color ERROR_COLOR = new Color(200, 100, 100);
     public static final Color WARNING_COLOR = new Color(200, 200, 100);
     public static final Color OVERLAY_COLOR = new Color(0, 0, 0, 150);
-    public static final Color OVERLAY_DARK = new Color(0, 0, 0, 180);
     public static final Color LIST_BACKGROUND = new Color(30, 30, 30);
     
     // Sizes
@@ -41,7 +39,6 @@ public final class UIConstants {
     public static final float PAUSED_TEXT_SIZE = 48f;
     
     // Delays
-    public static final int BUTTON_RESET_DELAY_MS = 2000;
     public static final int BUTTON_FEEDBACK_DELAY = 2000; // milliseconds
     
     // Score rendering positions

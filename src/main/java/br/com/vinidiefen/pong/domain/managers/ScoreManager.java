@@ -41,11 +41,11 @@ public class ScoreManager {
         incrementScore(Player.RIGHT);
     }
 
-    public void incrementScore(Player player) {
+    private void incrementScore(Player player) {
         addPoints(player, 1);
     }
 
-    public void addPoints(Player player, int points) {
+    private void addPoints(Player player, int points) {
         if (player == null || points <= 0) {
             return;
         }
@@ -95,7 +95,7 @@ public class ScoreManager {
     /**
      * Returns the winner, if any, as a type-safe value.
      */
-    public Optional<Player> getWinnerPlayer() {
+    private Optional<Player> getWinnerPlayer() {
         if (leftScore >= winningScore) {
             return Optional.of(Player.LEFT);
         }

@@ -432,7 +432,7 @@ public class GamePanel extends JPanel {
     /**
      * Draws a semi-transparent overlay covering the entire panel
      */
-    public void drawSemiTransparentOverlay(Graphics g) {
+    private void drawSemiTransparentOverlay(Graphics g) {
         g.setColor(UIConstants.OVERLAY_COLOR);
         g.fillRect(0, 0, getWidth(), getHeight());
     }

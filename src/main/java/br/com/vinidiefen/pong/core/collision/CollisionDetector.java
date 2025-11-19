@@ -34,16 +34,7 @@ public class CollisionDetector {
                 .filter(obj -> !collidables.contains(obj))
                 .forEach(collidables::add);
     }
-
-    /**
-     * Remove a CollisionObserver
-     *
-     * @param observer
-     */
-    public void removeCollisionObserver(CollisionObserver observer) {
-        collisionMap.remove(observer);
-    }
-
+    
     /**
      * Check if some of the game objects collide
      *

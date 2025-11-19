@@ -35,8 +35,4 @@ public class FieldLine extends GameObject {
         g2d.drawLine(middleScreenX, 0, middleScreenX, getParent().getHeight());
     }
 
-    public float[] getDashPattern() {
-        return dashPattern;
-    }
-
 }

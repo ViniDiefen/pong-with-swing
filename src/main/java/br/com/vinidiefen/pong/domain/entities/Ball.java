@@ -56,7 +56,7 @@ public class Ball extends GameObject implements CollisionObserver {
     /**
      * Reverse horizontal direction (when hitting paddle)
      */
-    public void reverseX() {
+    private void reverseX() {
         velocityX = -velocityX;
     }
 
@@ -77,7 +77,7 @@ public class Ball extends GameObject implements CollisionObserver {
     /**
      * Increase ball speed slightly
      */
-    public void increaseSpeed() {
+    private void increaseSpeed() {
         // Signum uses the sign of the velocity (+1, 0 or -1) to increase speed
         velocityX += Integer.signum(velocityX) * GameConstants.BALL_SPEED_INCREMENT;
         velocityY += Integer.signum(velocityY) * GameConstants.BALL_SPEED_INCREMENT;

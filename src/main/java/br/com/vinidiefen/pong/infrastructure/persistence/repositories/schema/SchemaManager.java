@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.reflections.Reflections;
 
@@ -23,17 +21,14 @@ import br.com.vinidiefen.pong.infrastructure.persistence.repositories.sql.DDLGen
  */
 public class SchemaManager {
 
-    private static final Logger LOGGER = Logger.getLogger(SchemaManager.class.getName());
     private final String modelPackage;
 
     /**
      * Main method for standalone schema creation.
      */
     public static void main(String[] args) {
-        LOGGER.info("Starting database schema creation...");
         SchemaManager manager = new SchemaManager();
         manager.recreateAll();
-        LOGGER.info("Database schema creation completed.");
     }
 
     /**
@@ -58,11 +53,7 @@ public class SchemaManager {
      */
     public void createAll() {
         Set<Class<?>> entityClasses = scanForEntityClasses();
-        LOGGER.info("Found " + entityClasses.size() + " entity class(es) to create");
-
-        // Sort by dependencies to ensure parent tables are created first
         java.util.List<Class<?>> sortedClasses = DependencyAnalyzer.sortForCreation(entityClasses);
-        LOGGER.info("Tables will be created in dependency order");
 
         for (Class<?> entityClass : sortedClasses) {
             createTable(entityClass);
@@ -71,15 +62,12 @@ public class SchemaManager {
 
     /**
      * Scans for all entity classes and drops their tables.
-     * Tables are dropped in reverse dependency order (child tables before parent tables).
+     * Tables are dropped in reverse dependency order (child tables before parent
+     * tables).
      */
     public void dropAll() {
         Set<Class<?>> entityClasses = scanForEntityClasses();
-        LOGGER.info("Found " + entityClasses.size() + " entity class(es) to drop");
-
-        // Sort in reverse dependency order to ensure child tables are dropped first
         java.util.List<Class<?>> sortedClasses = DependencyAnalyzer.sortForDeletion(entityClasses);
-        LOGGER.info("Tables will be dropped in reverse dependency order");
 
         for (Class<?> entityClass : sortedClasses) {
             dropTable(entityClass);
@@ -90,10 +78,8 @@ public class SchemaManager {
      * Recreates all tables (drops and creates).
      */
     public void recreateAll() {
-        LOGGER.info("Recreating all tables...");
         dropAll();
         createAll();
-        LOGGER.info("All tables recreated successfully.");
     }
 
     /**
@@ -102,26 +88,11 @@ public class SchemaManager {
      * @param entityClass the entity class
      */
     public void createTable(Class<?> entityClass) {
-        try {
-            EntityMetadata<?> metadata = new EntityMetadata<>(entityClass);
-            String sql = DDLGenerator.generateCreateTable(metadata);
-            
-            LOGGER.info("Creating table: " + metadata.getTableName());
-            System.out.println("SQL: " + sql);
+        EntityMetadata<?> metadata = new EntityMetadata<>(entityClass);
+        String sql = DDLGenerator.generateCreateTable(metadata);
 
-            executeSQL(sql);
-            LOGGER.info("Successfully created table: " + metadata.getTableName());
-
-        } catch (IllegalArgumentException e) {
-            LOGGER.log(Level.SEVERE, 
-                "Invalid entity configuration for " + entityClass.getSimpleName() + ": " + e.getMessage(), e);
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, 
-                "Database error creating table for " + entityClass.getSimpleName() + ": " + e.getMessage(), e);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, 
-                "Unexpected error creating table for " + entityClass.getSimpleName() + ": " + e.getMessage(), e);
-        }
+        System.out.println("Creating table: " + metadata.getTableName());
+        executeSQL(sql);
     }
 
     /**
@@ -130,20 +101,11 @@ public class SchemaManager {
      * @param entityClass the entity class
      */
     public void dropTable(Class<?> entityClass) {
-        try {
-            EntityMetadata<?> metadata = new EntityMetadata<>(entityClass);
-            String sql = DDLGenerator.generateDropTable(metadata);
-            
-            LOGGER.info("Dropping table: " + metadata.getTableName());
-            LOGGER.fine("SQL: " + sql);
+        EntityMetadata<?> metadata = new EntityMetadata<>(entityClass);
+        String sql = DDLGenerator.generateDropTable(metadata);
 
-            executeSQL(sql);
-            LOGGER.info("Successfully dropped table: " + metadata.getTableName());
-
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, 
-                "Error dropping table for " + entityClass.getSimpleName() + ": " + e.getMessage(), e);
-        }
+        System.out.println("Dropping table: " + metadata.getTableName());
+        executeSQL(sql);
     }
 
     /**
@@ -160,12 +122,13 @@ public class SchemaManager {
      * Executes a SQL statement.
      * 
      * @param sql the SQL statement to execute
-     * @throws SQLException if a database error occurs
      */
-    private void executeSQL(String sql) throws SQLException {
+    private void executeSQL(String sql) {
         try (Connection conn = PostgresConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement()) {
+                Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
+        } catch (SQLException e) {
+            System.err.println("SQL execution error: " + e.getMessage());
         }
     }
 }

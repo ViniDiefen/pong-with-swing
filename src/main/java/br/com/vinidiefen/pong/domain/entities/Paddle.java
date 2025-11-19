@@ -31,24 +31,6 @@ public class Paddle extends GameObject implements InputObserver {
     }
 
     /**
-     * Set the key code for moving up
-     * 
-     * @param upKey Key code (e.g., KeyEvent.VK_W)
-     */
-    public void setUpKey(int upKey) {
-        this.upKey = upKey;
-    }
-
-    /**
-     * Set the key code for moving down
-     * 
-     * @param downKey Key code (e.g., KeyEvent.VK_S)
-     */
-    public void setDownKey(int downKey) {
-        this.downKey = downKey;
-    }
-
-    /**
      * Get the key code for moving up
      */
     public int getUpKey() {
